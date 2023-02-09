@@ -1,3 +1,7 @@
+# 1.0.0+8
+
+- Adding new types of buttons
+
 # 1.0.0+7
 
 - Adding scroll validation
