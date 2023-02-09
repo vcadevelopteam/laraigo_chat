@@ -19,6 +19,20 @@ dependencies:
   laraigo_chat: ^1.0.0
 ```
 
+Like the project uses Geolocator for sharing location is necessary to add the corresponding permissions for it. Following the [Geolocator guide](https://pub.dev/packages/geolocator)
+
+Also is necessary to up add the MultiDex to your Android folder
+
+```kotlin
+  multiDexEnabled true
+```
+
+And set the minSdk to 20
+
+```kotlin
+  minsdk 20
+```
+
 You should then run `flutter packages upgrade` or update your packages in IntelliJ.
 
 ## Example Project

@@ -1,3 +1,11 @@
+# 1.0.0+7
+
+- Adding scroll validation
+
+# 1.0.0+6
+
+- Adding new button and fixing some styles.
+
 # 1.0.0+5
 
 - Converting to package template
