@@ -63,9 +63,14 @@ class _SocketContainerState extends State<SocketContainer> {
         width: widget.width,
         child: isInitialized
             ? widget.child
-            : Center(
-                child: CircularProgressIndicator(
-                  color: widget.circularProgressIndicatorColor,
+            : Container(
+                padding: const EdgeInsets.all(10),
+                width: 50,
+                height: 50,
+                child: Center(
+                  child: CircularProgressIndicator(
+                    color: widget.circularProgressIndicatorColor,
+                  ),
                 ),
               ),
       ),

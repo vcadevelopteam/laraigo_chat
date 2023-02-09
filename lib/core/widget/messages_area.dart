@@ -157,22 +157,21 @@ class _MessagesAreaState extends State<MessagesArea> {
                     ),
                   ],
                 )
-              : Expanded(
-                  child: SizedBox(
-                    height: MediaQuery.of(context).size.height - kToolbarHeight,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.message,
-                          color: Theme.of(context).textTheme.bodyLarge!.color,
-                        ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        const Text("No ha enviado mensajes")
-                      ],
-                    ),
+              : SizedBox(
+                  height: MediaQuery.of(context).size.height - kToolbarHeight,
+                  width: MediaQuery.of(context).size.width,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.message,
+                        color: Theme.of(context).textTheme.bodyLarge!.color,
+                      ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      const Text("No ha enviado mensajes")
+                    ],
                   ),
                 );
         } else {
