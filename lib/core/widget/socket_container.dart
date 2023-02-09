@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
@@ -6,7 +7,7 @@ import 'package:laraigo_chat/core/pages/chat_page.dart';
 import '../../model/color_preference.dart';
 import '../chat_socket.dart';
 
-class SocketButton extends StatefulWidget {
+class SocketContainer extends StatefulWidget {
   Widget child;
   String? integrationId;
   Color? circularProgressIndicatorColor;
@@ -14,7 +15,7 @@ class SocketButton extends StatefulWidget {
   double? width;
   String customMessage;
 
-  SocketButton(
+  SocketContainer(
       {required this.child,
       required this.integrationId,
       this.circularProgressIndicatorColor,
@@ -23,10 +24,10 @@ class SocketButton extends StatefulWidget {
       this.height});
 
   @override
-  State<SocketButton> createState() => _SocketButtonState();
+  State<SocketContainer> createState() => _SocketContainerState();
 }
 
-class _SocketButtonState extends State<SocketButton> {
+class _SocketContainerState extends State<SocketContainer> {
   ChatSocket? socket;
   bool isInitialized = false;
   ColorPreference colorPreference = ColorPreference();
