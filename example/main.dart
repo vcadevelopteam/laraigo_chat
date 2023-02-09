@@ -1,6 +1,5 @@
 // ignore_for_file: prefer_final_fields
 
-import 'package:laraigo_chat/core/widget/socket_action_button.dart';
 import 'package:flutter/material.dart';
 import 'package:laraigo_chat/core/widget/socket_container.dart';
 
@@ -72,7 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       color: Colors.red,
                       borderRadius: BorderRadius.circular(10)),
                   child: Column(
-                    children: [Text("PRUEBA"), Icon(Icons.read_more)],
+                    children: const [Text("PRUEBA"), Icon(Icons.read_more)],
                   ),
                 ),
               ),

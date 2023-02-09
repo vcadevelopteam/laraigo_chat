@@ -21,16 +21,25 @@ dependencies:
 
 Like the project uses Geolocator for sharing location is necessary to add the corresponding permissions for it. Following the [Geolocator guide](https://pub.dev/packages/geolocator)
 
-Also is necessary to up add the MultiDex to your Android folder
+Also is necessary to add the MultiDex to your Android folder
 
 ```kotlin
   multiDexEnabled true
 ```
 
-And set the minSdk to 20
+Set the minSdk to 20
 
 ```kotlin
   minsdk 20
+```
+
+And if you want to use the Google Maps functionallity to show your maps when location is shared, you need to specify your API key in the application manifest android/app/src/main/AndroidManifest.xml
+
+```xml
+ <manifest ...
+  <application ...
+    <meta-data android:name="com.google.android.geo.API_KEY"
+               android:value="YOUR KEY HERE"/>
 ```
 
 You should then run `flutter packages upgrade` or update your packages in IntelliJ.

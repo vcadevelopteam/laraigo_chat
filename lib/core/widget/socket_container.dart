@@ -1,7 +1,7 @@
+// ignore_for_file: must_be_immutable, use_key_in_widget_constructors
 
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
+
 import 'package:laraigo_chat/core/pages/chat_page.dart';
 
 import '../../model/color_preference.dart';
