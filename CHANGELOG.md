@@ -1,6 +1,10 @@
+# 1.0.0+9
+
+- Adding circular progress indicator resize and some expanded fixes
+
 # 1.0.0+8
 
-- Adding new types of buttons
+- Adding new types of buttons, new doc and custom background color in floating action button
 
 # 1.0.0+7
 
