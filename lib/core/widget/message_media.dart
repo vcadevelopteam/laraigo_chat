@@ -34,18 +34,23 @@ class _MediaMessageBubbleState extends State<MediaMessageBubble> {
     final mimeType = lookupMimeType(widget.message.data![0].mediaUrl!);
 
     if (!mimeType!.startsWith('image/')) {
-      setState(() {
-        isImage = false;
-      });
-      final response =
-          await http.get(Uri.parse(widget.message.data![0].mediaUrl!));
-
+      isImage = false;
       final documentDirectory = await getApplicationDocumentsDirectory();
+      var file = File("");
+      if (await File(documentDirectory.path +
+              widget.message.data![0].filename.toString())
+          .exists()) {
+        file = File(documentDirectory.path +
+            widget.message.data![0].filename.toString());
+      } else {
+        final response =
+            await http.get(Uri.parse(widget.message.data![0].mediaUrl!));
 
-      final file = File(
-          documentDirectory.path + widget.message.data![0].filename.toString());
+        file = File(documentDirectory.path +
+            widget.message.data![0].filename.toString());
 
-      file.writeAsBytesSync(response.bodyBytes);
+        file.writeAsBytesSync(response.bodyBytes);
+      }
 
       controller = VideoPlayerController.file(file);
       controller!.initialize();
