@@ -1,3 +1,11 @@
+# 1.0.1+11
+
+- Adding video player
+
+# 1.0.0+10
+
+- Adding design fixes
+
 # 1.0.0+9
 
 - Adding circular progress indicator resize and some expanded fixes
