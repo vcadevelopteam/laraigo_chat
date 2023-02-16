@@ -1,3 +1,7 @@
+# 1.0.1+13
+
+- Adding new UI Fixes
+
 # 1.0.1+12
 
 - Adding new carousel UI
