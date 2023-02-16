@@ -1,3 +1,7 @@
+# 1.0.2+14
+
+- Adding Icon color
+
 # 1.0.1+13
 
 - Adding new UI Fixes
