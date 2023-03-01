@@ -1,7 +1,5 @@
 // ignore_for_file: use_build_context_synchronously, must_be_immutable
 
-import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 
 import 'package:flutter/material.dart';
@@ -46,11 +44,11 @@ class _MessageInputState extends State<MessageInput> {
                 isUser: true,
                 error: false,
                 message: MessageSingleResponse(
-                    createdAt: DateTime.now().millisecondsSinceEpoch,
+                    createdAt: DateTime.now().toUtc().millisecondsSinceEpoch,
                     data: data,
                     type: MessageType.text.name,
                     id: const Uuid().v4().toString()),
-                receptionDate: DateTime.now().millisecondsSinceEpoch)
+                receptionDate: DateTime.now().toUtc().millisecondsSinceEpoch)
             .toJson();
 
         setState(() {
@@ -79,11 +77,11 @@ class _MessageInputState extends State<MessageInput> {
                 isUser: true,
                 error: false,
                 message: MessageSingleResponse(
-                    createdAt: DateTime.now().millisecondsSinceEpoch,
+                    createdAt: DateTime.now().toUtc().millisecondsSinceEpoch,
                     data: data,
                     type: type.name,
                     id: const Uuid().v4().toString()),
-                receptionDate: DateTime.now().millisecondsSinceEpoch)
+                receptionDate: DateTime.now().toUtc().millisecondsSinceEpoch)
             .toJson();
 
         messagesToSend.add(messageSent);
@@ -113,11 +111,13 @@ class _MessageInputState extends State<MessageInput> {
                       isUser: true,
                       error: false,
                       message: MessageSingleResponse(
-                          createdAt: DateTime.now().millisecondsSinceEpoch,
+                          createdAt:
+                              DateTime.now().toUtc().millisecondsSinceEpoch,
                           data: data,
                           type: type.name,
                           id: const Uuid().v4().toString()),
-                      receptionDate: DateTime.now().millisecondsSinceEpoch)
+                      receptionDate:
+                          DateTime.now().toUtc().millisecondsSinceEpoch)
                   .toJson();
 
               messagesToSend.add(messageSent);
@@ -143,11 +143,13 @@ class _MessageInputState extends State<MessageInput> {
                       isUser: true,
                       error: false,
                       message: MessageSingleResponse(
-                          createdAt: DateTime.now().millisecondsSinceEpoch,
+                          createdAt:
+                              DateTime.now().toUtc().millisecondsSinceEpoch,
                           data: data,
                           type: type.name,
                           id: const Uuid().v4().toString()),
-                      receptionDate: DateTime.now().millisecondsSinceEpoch)
+                      receptionDate:
+                          DateTime.now().toUtc().millisecondsSinceEpoch)
                   .toJson();
 
               messagesToSend.add(messageSent);
@@ -244,11 +246,13 @@ class _MessageInputState extends State<MessageInput> {
                         child: Container(
                           margin: const EdgeInsets.only(right: 10),
                           decoration: BoxDecoration(
-                            color: HexColor(colorPreference.messageBotColor!)
-                                        .computeLuminance() >
-                                    0.5
-                                ? Colors.black
-                                : Colors.white, // border color
+                            color: HexColor('#8c8c8e'),
+
+                            //  HexColor(colorPreference.messageBotColor!)
+                            //             .computeLuminance() >
+                            //         0.5
+                            //     ? Colors.black
+                            //     : Colors.white, // border color
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
@@ -268,21 +272,32 @@ class _MessageInputState extends State<MessageInput> {
                             autofocus: false,
                             style: TextStyle(
                                 fontSize: 18,
-                                color: HexColor(
-                                    colorPreference.iconsColor.toString())),
+                                color: HexColor('#8c8c8e'),
+                                fontWeight: FontWeight.w900
+
+                                // HexColor(
+                                //     colorPreference.iconsColor.toString())
+
+                                ),
                             decoration: InputDecoration(
                               filled: true,
-                              fillColor: HexColor(colorPreference.iconsColor
-                                              .toString())
-                                          .computeLuminance() >
-                                      0.5
-                                  ? Colors.black
-                                  : Colors.white,
+                              fillColor: Colors.transparent,
+
+                              // HexColor(colorPreference.iconsColor
+                              //                 .toString())
+                              //             .computeLuminance() >
+                              //         0.5
+                              //     ? Colors.black
+                              //     : Colors.white,
+
                               hintText: "Mensaje...",
                               contentPadding: const EdgeInsets.only(left: 10),
-                              hintStyle: TextStyle(
-                                  color: HexColor(
-                                      colorPreference.iconsColor.toString())),
+                              hintStyle: TextStyle(color: HexColor('#8c8c8e')
+
+                                  // HexColor(
+                                  //     colorPreference.iconsColor.toString())
+
+                                  ),
                               labelStyle: TextStyle(
                                   color: Theme.of(context)
                                       .textTheme
@@ -335,11 +350,15 @@ class _MessageInputState extends State<MessageInput> {
                     child: Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: HexColor(colorPreference.messageBotColor!)
-                                    .computeLuminance() >
-                                0.5
-                            ? Colors.black
-                            : Colors.white, // border color
+                        color: HexColor('#8c8c8e'),
+
+                        //  HexColor(colorPreference.messageBotColor!)
+                        //             .computeLuminance() >
+                        //         0.5
+                        //     ? Colors.black
+                        //     : Colors.white,
+                        //      // border color
+
                         shape: BoxShape.circle,
                       ),
                       child: Center(

@@ -24,11 +24,12 @@ class MessageButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(vertical:8.0),
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
           child: Text(
             data[0].message!,
             style: TextStyle(
@@ -41,11 +42,12 @@ class MessageButtons extends StatelessWidget {
                     : Colors.white),
           ),
         ),
-        
         Container(
+          constraints: BoxConstraints(maxHeight: size.height * 0.3),
           padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10), color: Colors.transparent),
+              borderRadius: BorderRadius.circular(10),
+              color: Colors.transparent),
           child: ListView.builder(
             shrinkWrap: true,
             itemCount: data[0].buttons!.length,
@@ -55,7 +57,7 @@ class MessageButtons extends StatelessWidget {
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: HexColor(color.messageClientColor !),
+                      backgroundColor: HexColor(color.messageClientColor!),
                     ),
                     onPressed: () {
                       sendMessage(data[0].buttons![indx].payload!,
@@ -64,7 +66,7 @@ class MessageButtons extends StatelessWidget {
                     child: Text(
                       data[0].buttons![indx].text!,
                       style: TextStyle(
-                          color: HexColor(color.messageClientColor.toString())
+                          color: HexColor(color.messageBotColor.toString())
                                       .computeLuminance() >
                                   0.5
                               ? Colors.black
