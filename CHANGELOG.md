@@ -1,3 +1,7 @@
+# 1.0.3+17
+
+- Adding more validations
+
 # 1.0.3+16
 
 - Adding connection catchers.
