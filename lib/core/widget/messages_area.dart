@@ -1,6 +1,7 @@
 // ignore_for_file: must_be_immutable, prefer_typing_uninitialized_variables, unused_local_variable
 
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -77,27 +78,29 @@ class _MessagesAreaState extends State<MessagesArea> {
       opacity: _visible ? 1.0 : 0.0,
       child: Transform.rotate(
         angle: 270 * math.pi / 180,
-        child: ElevatedButton.icon(
-            style: ElevatedButton.styleFrom(
-              shape: const CircleBorder(),
-              backgroundColor: Colors.white,
-              padding: const EdgeInsets.all(0),
-            ),
-            onPressed: () {
-              scrollController!.animateTo(
-                scrollController!.position.maxScrollExtent,
-                curve: Curves.easeOut,
-                duration: const Duration(milliseconds: 500),
-              );
-              setState(() {
-                _visible = false;
-              });
-            },
-            icon: const Icon(
-              Icons.arrow_back,
-              color: Colors.black,
-            ),
-            label: const Text("")),
+        child: messages.isNotEmpty
+            ? ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  shape: const CircleBorder(),
+                  backgroundColor: Colors.white,
+                  padding: const EdgeInsets.all(0),
+                ),
+                onPressed: () {
+                  scrollController!.animateTo(
+                    scrollController!.position.maxScrollExtent,
+                    curve: Curves.easeOut,
+                    duration: const Duration(milliseconds: 500),
+                  );
+                  setState(() {
+                    _visible = false;
+                  });
+                },
+                icon: const Icon(
+                  Icons.arrow_back,
+                  color: Colors.black,
+                ),
+                label: const Text(""))
+            : SizedBox(),
       ),
     );
   }
@@ -176,18 +179,25 @@ class _MessagesAreaState extends State<MessagesArea> {
                                       messages[indx].messageDate!))));
                             }
 
-                            return messages[indx].type == MessageType.carousel? MessageCarousel(messages[indx].data!, colorPreference, widget.socket) :Column(
-                              children: [
-                                separator,
-                                MessageBubble(
-                                    messages[indx],
-                                    indx,
-                                    colorPreference,
-                                    widget.socket.integrationResponse!.metadata!
-                                        .icons!.chatHeaderImage!,
-                                    widget.socket)
-                              ],
-                            );
+                            return messages[indx].type == MessageType.carousel
+                                ? MessageCarousel(messages[indx].data!,
+                                    colorPreference, widget.socket)
+                                : Column(
+                                    children: [
+                                      separator,
+                                      MessageBubble(
+                                          messages[indx],
+                                          indx,
+                                          colorPreference,
+                                          widget
+                                              .socket
+                                              .integrationResponse!
+                                              .metadata!
+                                              .icons!
+                                              .chatHeaderImage!,
+                                          widget.socket)
+                                    ],
+                                  );
                           }),
                     ),
                   ],
@@ -216,16 +226,54 @@ class _MessagesAreaState extends State<MessagesArea> {
     );
   }
 
+  Future<bool> hasNetwork() async {
+    try {
+      final result = await InternetAddress.lookup('8.8.8.8');
+
+      return result.isNotEmpty && result[0].rawAddress.isNotEmpty;
+    } on SocketException catch (_) {
+      return false;
+    }
+  }
+
   initChat() async {
-    widget.socket.channel!.stream.asBroadcastStream().listen((event) {
-      var decodedJson = jsonDecode(event);
-      decodedJson['sender'] = SenderType.chat.name;
-      widget.socket.controller!.sink.add(decodedJson);
-    });
-    await Future.delayed(const Duration(milliseconds: 500));
-    var messagesCount = await ChatSocketRepository.getLocalMessages();
-    if (messagesCount.isNotEmpty) {
-      scrollDown();
+    try {
+      widget.socket.channel!.stream.asBroadcastStream().listen((event) async {
+        var decodedJson = jsonDecode(event);
+        decodedJson['sender'] = SenderType.chat.name;
+        widget.socket.controller!.sink.add(decodedJson);
+      }).onDone(() {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return const AlertDialog(
+              title: Text('Error de conexión'),
+              content: Text(
+                  'Por favor verifique su conexión de internet e intentelo nuevamente'),
+            );
+          },
+        ).then((value) {
+          Navigator.pop(context);
+        });
+      });
+      await Future.delayed(const Duration(milliseconds: 500));
+      var messagesCount = await ChatSocketRepository.getLocalMessages();
+      if (messagesCount.isNotEmpty) {
+        scrollDown();
+      }
+    } catch (exception, stacktrace) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return const AlertDialog(
+            title: Text('Error de conexión'),
+            content: Text(
+                'Por favor verifique su conexión de internet e intentelo nuevamente'),
+          );
+        },
+      ).then((value) {
+        Navigator.pop(context);
+      });
     }
   }
 

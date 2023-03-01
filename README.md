@@ -16,7 +16,7 @@ You should ensure that you add the router as a dependency in your flutter projec
 
 ```yaml
 dependencies:
-  laraigo_chat: ^1.0.0
+  laraigo_chat: ^1.0.2+15
 ```
 
 Like the project uses Geolocator for sharing location is necessary to add the corresponding permissions for it. Following the [Geolocator guide](https://pub.dev/packages/geolocator)
@@ -33,7 +33,7 @@ Set the minSdk to 20
   minsdk 20
 ```
 
-And if you want to use the Google Maps functionallity to show your maps when location is shared, you need to specify your API key in the application manifest android/app/src/main/AndroidManifest.xml
+And if you want to use the Google Maps functionality to show your maps when a location is shared, you need to specify your API key in the application manifest android/app/src/main/AndroidManifest.xml
 
 ```xml
  <manifest ...
@@ -42,28 +42,65 @@ And if you want to use the Google Maps functionallity to show your maps when loc
                android:value="YOUR KEY HERE"/>
 ```
 
+If you find a specific issue on integration related to Google Maps please review the [Google Maps Flutter documentation](https://pub.dev/packages/google_maps_flutter) for further assistance
+
 You should then run `flutter packages upgrade` or update your packages in IntelliJ.
 
 ## Example Project
 
-There is a example project in the `example` folder. Check it out. Otherwise, keep reading to get up and running.
+There is an example project in the `example` folder. Check it out. Otherwise, keep reading to get up and running.
 
 ## Usage
 
-Need to include the import the package to the dart file where it will be used, use the below command,
+Need to include the import of the package to the dart file where it will be used, use the below command,
 
 ```dart
 import 'package:laraigo_chat/socket_action_button.dart';
 ```
 
-**Circular percent indicator**
+**Custom Container**
 
-Basic Widget
+```dart
+    SocketContainer(
+                child: widget,
+                integrationId: "Your Integration Id",
+                customMessage: "Hola"),
+```
+
+**Floating Action Button**
 
 ```dart
   floatingActionButton: SocketActionButton(
           integrationId: 'Your Integration Id',
         )
+```
+
+**Elevated Button**
+
+```dart
+  SocketElevatedButton(
+              width: 80,
+              height: 80,
+              integrationId: "Your Integration Id",
+              child: Container(
+                width: 80,
+                height: 80,
+                padding: const EdgeInsets.all(10),
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: const [Icon(Icons.chat), Text("Soporte")]),
+              ),
+```
+
+**Floating Action Button**
+
+```dart
+   SocketTextButton(
+              customMessage: "Hola",
+              integrationId: "Your Integration Id",
+              child: const Text("Iniciar conversación"),
+            )
 ```
 
 Complete example

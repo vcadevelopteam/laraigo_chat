@@ -1,5 +1,7 @@
 // ignore_for_file: use_build_context_synchronously, must_be_immutable
 
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 
 import 'package:flutter/material.dart';
@@ -28,6 +30,16 @@ class MessageInput extends StatefulWidget {
 
 class _MessageInputState extends State<MessageInput> {
   final _textController = TextEditingController();
+
+  Future<bool> hasNetwork() async {
+    try {
+      final result = await InternetAddress.lookup('google.com');
+
+      return result.isNotEmpty && result[0].rawAddress.isNotEmpty;
+    } on SocketException catch (_) {
+      return false;
+    }
+  }
 
   void sendMessage() async {
     if (_textController.text.isNotEmpty) {
@@ -242,14 +254,16 @@ class _MessageInputState extends State<MessageInput> {
                         child: Container(
                           margin: const EdgeInsets.only(right: 10),
                           decoration: BoxDecoration(
-                            color: HexColor(colorPreference
-                                .messageBotColor!), // border color
+                            color: HexColor(colorPreference.messageBotColor!)
+                                        .computeLuminance() >
+                                    0.5
+                                ? Colors.black
+                                : Colors.white, // border color
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
                             Icons.add,
-                            color: HexColor(colorPreference
-                                .iconsColor!),
+                            color: HexColor(colorPreference.iconsColor!),
                             size: 30,
                           ),
                         ),
@@ -264,17 +278,21 @@ class _MessageInputState extends State<MessageInput> {
                             autofocus: false,
                             style: TextStyle(
                                 fontSize: 18,
-                                color: Theme.of(context)
-                                    .textTheme
-                                    .bodyLarge!
-                                    .color),
+                                color: HexColor(
+                                    colorPreference.iconsColor.toString())),
                             decoration: InputDecoration(
                               filled: true,
-                              fillColor: HexColor(
-                                  colorPreference.messageBotColor.toString()),
+                              fillColor: HexColor(colorPreference.iconsColor
+                                              .toString())
+                                          .computeLuminance() >
+                                      0.5
+                                  ? Colors.black
+                                  : Colors.white,
                               hintText: "Mensaje...",
+                              contentPadding: const EdgeInsets.only(left: 10),
                               hintStyle: TextStyle(
-                                  color: Colors.black.withOpacity(0.5)),
+                                  color: HexColor(
+                                      colorPreference.iconsColor.toString())),
                               labelStyle: TextStyle(
                                   color: Theme.of(context)
                                       .textTheme
@@ -305,16 +323,32 @@ class _MessageInputState extends State<MessageInput> {
                 margin: const EdgeInsets.only(left: 10),
                 child: StreamBuilder(builder: (context, snapshot) {
                   return GestureDetector(
-                    onTap: () {
-                      if (_textController.text.isNotEmpty) {
-                        sendMessage();
+                    onTap: () async {
+                      final connection = await hasNetwork();
+                      if (connection) {
+                        if (_textController.text.isNotEmpty) {
+                          sendMessage();
+                        }
+                      } else {
+                        showDialog(
+                            context: context,
+                            builder: ((context) {
+                              return const AlertDialog(
+                                title: Text('Error de conexión'),
+                                content: Text(
+                                    'Por favor verifique su conexión de internet e intentelo nuevamente'),
+                              );
+                            }));
                       }
                     },
                     child: Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: HexColor(
-                            colorPreference.messageBotColor!), // border color
+                        color: HexColor(colorPreference.messageBotColor!)
+                                    .computeLuminance() >
+                                0.5
+                            ? Colors.black
+                            : Colors.white, // border color
                         shape: BoxShape.circle,
                       ),
                       child: Center(

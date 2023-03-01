@@ -1,10 +1,12 @@
 // ignore_for_file: use_build_context_synchronously, use_key_in_widget_constructors, must_be_immutable, no_leading_underscores_for_local_identifiers
 
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:laraigo_chat/helpers/permissions_handler.dart';
 
 import '../../helpers/color_convert.dart';
 import '../../helpers/location_manager.dart';
@@ -157,14 +159,15 @@ class _MediaInputModalState extends State<MediaInputModal> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
-                        padding: const EdgeInsets.symmetric(vertical:10.0),
+                        padding: const EdgeInsets.symmetric(vertical: 10.0),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           mainAxisSize: MainAxisSize.max,
                           children: [
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 10),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10),
                               child: Text(
                                 'Escoja una opción',
                                 textAlign: TextAlign.center,
@@ -185,37 +188,62 @@ class _MediaInputModalState extends State<MediaInputModal> {
                       ),
                       TextButton(
                           onPressed: (() async {
-                            FilePickerResult? result = await FilePicker.platform
-                                .pickFiles(
-                                    allowMultiple: true, type: FileType.media);
-                            if (result != null) {
-                              if (result.files.isNotEmpty) {
-                                showDialog(
-                                    context: context,
-                                    builder: (dialogContext) {
-                                      return StatefulBuilder(builder:
-                                          (dialogContext, setStateCustom) {
-                                        return MediaDialog(result.files,
-                                            setStateCustom, isSendingMessage);
-                                      });
-                                    }).then((valueInDialog) {
-                                  var dataToReturn = valueInDialog;
+                            bool photoPermission = await askStorage();
 
-                                  try {
-                                    if (dataToReturn["data"].isNotEmpty) {
+                            if (photoPermission) {
+                              FilePickerResult? result =
+                                  await FilePicker.platform.pickFiles(
+                                      allowMultiple: true,
+                                      type: FileType.media);
+                              if (result != null) {
+                                if (result.files.isNotEmpty) {
+                                  showDialog(
+                                      barrierDismissible: false,
+                                      context: context,
+                                      builder: (dialogContext) {
+                                        return StatefulBuilder(builder:
+                                            (dialogContext, setStateCustom) {
+                                          return MediaDialog(result.files,
+                                              setStateCustom, isSendingMessage);
+                                        });
+                                      }).then((valueInDialog) {
+                                    var dataToReturn = valueInDialog;
+
+                                    try {
+                                      if (dataToReturn["data"].isNotEmpty) {
+                                        Navigator.pop(context, dataToReturn);
+                                      }
+                                    } catch (e) {
                                       Navigator.pop(context, dataToReturn);
                                     }
-                                  } catch (e) {
-                                    Navigator.pop(context, dataToReturn);
-                                  }
-                                });
+                                  });
+                                }
                               }
+                            } else {
+                              showDialog(
+                                  barrierDismissible: false,
+                                  context: context,
+                                  builder: (locationDialogContext) {
+                                    return AlertDialog(
+                                      title:
+                                          Text('Librería de archivos denegada'),
+                                      content: Text(
+                                          'Por favor brinde acceso a su librería de archivos desde los ajustes, para que pueda compartir su imagen.'),
+                                      actions: [
+                                        TextButton(
+                                            onPressed: () =>
+                                                Navigator.pop(context),
+                                            child: Text('Cerrar'))
+                                      ],
+                                    );
+                                  });
                             }
                           }),
                           child: Row(
                             children: [
                               Icon(Icons.photo,
-                                  color: HexColor(widget.colorPreference.iconsColor!)),
+                                  color: HexColor(
+                                      widget.colorPreference.iconsColor!)),
                               const SizedBox(
                                 width: 5,
                               ),
@@ -234,52 +262,75 @@ class _MediaInputModalState extends State<MediaInputModal> {
                           )),
                       TextButton(
                           onPressed: (() async {
-                            FilePickerResult? result = await FilePicker.platform
-                                .pickFiles(
-                                    allowMultiple: true,
-                                    type: FileType.custom,
-                                    allowedExtensions: [
-                                  "pdf",
-                                  "xlsx",
-                                  "xls",
-                                  "doc",
-                                  "docx",
-                                  "pptx",
-                                  "csv",
-                                  "txt"
-                                ]);
-                            if (result != null) {
-                              if (result.files.isNotEmpty) {
-                                showDialog(
-                                    context: context,
-                                    builder: (dialogContext) {
-                                      return StatefulBuilder(builder:
-                                          (dialogContext, setStateCustom) {
-                                        return fileDialog(
-                                            _screenWidth,
-                                            _screenHeight,
-                                            result.files,
-                                            dialogContext,
-                                            setStateCustom);
-                                      });
-                                    }).then((valueInDialog) {
-                                  var dataToReturn = valueInDialog;
+                            bool storagePermission = await askStorage();
+                            if (storagePermission) {
+                              FilePickerResult? result =
+                                  await FilePicker.platform.pickFiles(
+                                      allowMultiple: true,
+                                      type: FileType.custom,
+                                      allowedExtensions: [
+                                    "pdf",
+                                    "xlsx",
+                                    "xls",
+                                    "doc",
+                                    "docx",
+                                    "pptx",
+                                    "csv",
+                                    "txt"
+                                  ]);
+                              if (result != null) {
+                                if (result.files.isNotEmpty) {
+                                  showDialog(
+                                      barrierDismissible: false,
+                                      context: context,
+                                      builder: (dialogContext) {
+                                        return StatefulBuilder(builder:
+                                            (dialogContext, setStateCustom) {
+                                          return fileDialog(
+                                              _screenWidth,
+                                              _screenHeight,
+                                              result.files,
+                                              dialogContext,
+                                              setStateCustom);
+                                        });
+                                      }).then((valueInDialog) {
+                                    var dataToReturn = valueInDialog;
 
-                                  try {
-                                    if (dataToReturn["data"].isNotEmpty) {
+                                    try {
+                                      if (dataToReturn["data"].isNotEmpty) {
+                                        Navigator.pop(context, dataToReturn);
+                                      }
+                                    } catch (e) {
                                       Navigator.pop(context, dataToReturn);
                                     }
-                                  } catch (e) {
-                                    Navigator.pop(context, dataToReturn);
-                                  }
-                                });
+                                  });
+                                }
                               }
+                            } else {
+                              showDialog(
+                                  barrierDismissible: false,
+                                  context: context,
+                                  builder: (locationDialogContext) {
+                                    return AlertDialog(
+                                      title:
+                                          Text('Librería de archivos denegada'),
+                                      content: Text(
+                                          'Por favor brinde acceso a su librería de archivos desde los ajustes, para que pueda compartir su archivo.'),
+                                      actions: [
+                                        TextButton(
+                                            onPressed: () =>
+                                                Navigator.pop(context),
+                                            child: Text('Cerrar'))
+                                      ],
+                                    );
+                                  });
                             }
                           }),
                           child: Row(
                             children: [
                               Icon(Icons.attach_file_rounded,
-                                  color:  HexColor(widget.colorPreference.iconsColor!)),
+                                  color: HexColor(
+                                      widget.colorPreference.iconsColor!)),
                               const SizedBox(
                                 width: 5,
                               ),
@@ -298,42 +349,65 @@ class _MediaInputModalState extends State<MediaInputModal> {
                           )),
                       TextButton(
                           onPressed: (() async {
-                            showDialog(
-                                context: context,
-                                builder: (locationDialogContext) {
-                                  return Dialog(
-                                    child: SizedBox(
-                                      width: _screenWidth * 0.2,
-                                      height: _screenHeight * 0.1,
-                                      child: Center(
-                                          child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: const [
-                                          Text("Obteniendo Ubicacion..."),
-                                          SizedBox(
-                                            width: 15,
-                                          ),
-                                          CircularProgressIndicator()
-                                        ],
-                                      )),
-                                    ),
-                                  );
-                                }).then((value) {
-                              Navigator.pop(context, value);
-                            });
-                            Position location =
-                                await LocationManager.determinePosition();
+                            bool locationPermission = Platform.isAndroid? await askGps(): await askGpsForIos();
 
-                            Navigator.pop(context, {
-                              "type": MessageType.location,
-                              "data": [location]
-                            });
+                            if (locationPermission) {
+                              showDialog(
+                                  barrierDismissible: false,
+                                  context: context,
+                                  builder: (locationDialogContext) {
+                                    return Dialog(
+                                      child: SizedBox(
+                                        width: _screenWidth * 0.2,
+                                        height: _screenHeight * 0.1,
+                                        child: Center(
+                                            child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: const [
+                                            Text("Obteniendo Ubicacion..."),
+                                            SizedBox(
+                                              width: 15,
+                                            ),
+                                            CircularProgressIndicator()
+                                          ],
+                                        )),
+                                      ),
+                                    );
+                                  }).then((value) {
+                                Navigator.pop(context, value);
+                              });
+                              Position location =
+                                  await LocationManager.determinePosition();
+
+                              Navigator.pop(context, {
+                                "type": MessageType.location,
+                                "data": [location]
+                              });
+                            } else {
+                              showDialog(
+                                  barrierDismissible: false,
+                                  context: context,
+                                  builder: (locationDialogContext) {
+                                    return AlertDialog(
+                                      title: Text('Ubicación denegada'),
+                                      content: Text(
+                                          'Por favor brinde acceso a su ubicación desde ajustes, para que pueda compartirla.'),
+                                      actions: [
+                                        TextButton(
+                                            onPressed: () =>
+                                                Navigator.pop(context),
+                                            child: Text('Cerrar'))
+                                      ],
+                                    );
+                                  });
+                            }
                           }),
                           child: Row(
                             children: [
                               Icon(Icons.location_on,
-                                  color:  HexColor(widget.colorPreference.iconsColor!)),
+                                  color: HexColor(
+                                      widget.colorPreference.iconsColor!)),
                               const SizedBox(
                                 width: 5,
                               ),
@@ -365,7 +439,8 @@ class _MediaInputModalState extends State<MediaInputModal> {
                       Text(
                         'Cancelar',
                         style: TextStyle(
-                            color:  HexColor(widget.colorPreference.iconsColor!)),
+                            color:
+                                HexColor(widget.colorPreference.iconsColor!)),
                       )
                     ],
                   )),
@@ -378,7 +453,10 @@ class _MediaInputModalState extends State<MediaInputModal> {
                 onTap: () {
                   Navigator.pop(context);
                 },
-                child:  Icon(Icons.cancel_outlined, color:  HexColor(widget.colorPreference.iconsColor!),)),
+                child: Icon(
+                  Icons.cancel_outlined,
+                  color: HexColor(widget.colorPreference.iconsColor!),
+                )),
           ),
         ],
       ),

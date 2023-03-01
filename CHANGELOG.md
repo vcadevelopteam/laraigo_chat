@@ -1,3 +1,7 @@
+# 1.0.2+15
+
+- Modiying readme
+
 # 1.0.2+14
 
 - Adding Icon color
