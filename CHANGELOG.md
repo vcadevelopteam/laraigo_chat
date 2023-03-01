@@ -1,3 +1,8 @@
+# 1.0.3+16
+
+- Adding permissions handler.
+- Adding block to dimiss dialogs.
+
 # 1.0.2+15
 
 - Modiying readme
