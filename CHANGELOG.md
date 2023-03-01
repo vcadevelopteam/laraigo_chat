@@ -1,5 +1,9 @@
 # 1.0.3+16
 
+- Adding connection catchers.
+
+# 1.0.3+16
+
 - Adding permissions handler.
 - Adding block to dimiss dialogs.
 
