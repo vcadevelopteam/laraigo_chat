@@ -15,10 +15,12 @@ class SocketActionButton extends StatefulWidget {
   String? integrationId;
   Color? backgroundColor;
   Icon icon;
+  String customMessage;
   SocketActionButton(
       {super.key,
       required this.integrationId,
       required this.icon,
+      this.customMessage = "",
       this.backgroundColor});
 
   @override
@@ -75,10 +77,12 @@ class _SocketActionButtonState extends State<SocketActionButton> {
         final connection = await ChatSocketRepository.hasNetwork();
         if (socket != null && connection) {
           Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => ChatPage(socket: socket!)))
-              .then((value) async {
+              context,
+              MaterialPageRoute(
+                  builder: (context) => ChatPage(
+                        socket: socket!,
+                        customMessage: widget.customMessage,
+                      ))).then((value) async {
             var prefs = await SharedPreferences.getInstance();
             if (prefs.getBool("cerradoManualmente")! == false) {
               showDialog(

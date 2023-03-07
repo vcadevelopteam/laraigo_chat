@@ -51,11 +51,11 @@ class _MessagesAreaState extends State<MessagesArea> {
   }
 
   void scrollDown() {
-    scrollController!.animateTo(
-      scrollController!.position.maxScrollExtent,
-      curve: Curves.easeOut,
-      duration: const Duration(seconds: 3),
-    );
+    // scrollController!.animateTo(
+    //   scrollController!.position.maxScrollExtent,
+    //   curve: Curves.easeOut,
+    //   duration: const Duration(seconds: 3),
+    // );
   }
 
   void _scrollListener() {
@@ -87,21 +87,21 @@ class _MessagesAreaState extends State<MessagesArea> {
                   padding: const EdgeInsets.all(0),
                 ),
                 onPressed: () {
+                  setState(() {
+                    _visible = false;
+                  });
                   scrollController!.animateTo(
                     scrollController!.position.maxScrollExtent,
                     curve: Curves.easeOut,
                     duration: const Duration(milliseconds: 500),
                   );
-                  setState(() {
-                    _visible = false;
-                  });
                 },
                 icon: const Icon(
                   Icons.arrow_back,
                   color: Colors.black,
                 ),
                 label: const Text(""))
-            : SizedBox(),
+            : const SizedBox(),
       ),
     );
   }
@@ -144,9 +144,9 @@ class _MessagesAreaState extends State<MessagesArea> {
           WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
             if (messages.isNotEmpty) {
               scrollController!.animateTo(
-                  scrollController!.position.maxScrollExtent,
-                  duration: const Duration(milliseconds: 500),
-                  curve: Curves.easeInOut);
+                  scrollController!.position.maxScrollExtent + 200,
+                  duration: const Duration(milliseconds: 1),
+                  curve: Curves.linear);
             }
           });
 
@@ -155,6 +155,7 @@ class _MessagesAreaState extends State<MessagesArea> {
                   children: [
                     Expanded(
                       child: ListView.builder(
+                          physics: const BouncingScrollPhysics(),
                           controller: scrollController,
                           reverse: false,
                           keyboardDismissBehavior:
@@ -263,12 +264,12 @@ class _MessagesAreaState extends State<MessagesArea> {
         prefs.setBool("cerradoManualmente", false);
       });
 
-      await Future.delayed(const Duration(milliseconds: 500));
+      await Future.delayed(const Duration(milliseconds: 50));
       var messagesCount = await ChatSocketRepository.getLocalMessages();
-      if (messagesCount.isNotEmpty) {
-        scrollDown();
-      }
-    } catch (exception, stacktrace) {
+      // if (messagesCount.isNotEmpty) {
+      //   // scrollDown();
+      // }
+    } catch (exception) {
       showDialog(
         context: context,
         builder: (context) {

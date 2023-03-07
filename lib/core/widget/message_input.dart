@@ -9,6 +9,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../helpers/color_convert.dart';
 import '../../helpers/message_type.dart';
+import '../../helpers/single_tap.dart';
 import '../../model/color_preference.dart';
 import '../../model/message_response.dart';
 import '../../repository/chat_socket_repository.dart';
@@ -18,6 +19,7 @@ import 'media_input_modal.dart';
 /*
 This widget is used as an input for the whole chat page
  */
+
 class MessageInput extends StatefulWidget {
   ChatSocket socket;
   MessageInput(this.socket, {super.key});
@@ -176,6 +178,7 @@ class _MessageInputState extends State<MessageInput> {
         widget.socket.integrationResponse!.metadata!.color!;
     Color backgroundColor =
         HexColor(colorPreference.chatBackgroundColor.toString());
+    bool sendValidator = false;
 
     return SafeArea(
       child: Container(
@@ -268,12 +271,14 @@ class _MessageInputState extends State<MessageInput> {
                           child: TextFormField(
                             controller: _textController,
                             textAlign: TextAlign.left,
-                            onChanged: (val) {},
+                            onChanged: (String val) {
+                              setState(() {});
+                            },
                             autofocus: false,
                             style: TextStyle(
                                 fontSize: 18,
                                 color: HexColor('#8c8c8e'),
-                                fontWeight: FontWeight.w900
+                                fontWeight: FontWeight.w500
 
                                 // HexColor(
                                 //     colorPreference.iconsColor.toString())
@@ -292,7 +297,9 @@ class _MessageInputState extends State<MessageInput> {
 
                               hintText: "Mensaje...",
                               contentPadding: const EdgeInsets.only(left: 10),
-                              hintStyle: TextStyle(color: HexColor('#8c8c8e')
+                              hintStyle: TextStyle(
+                                  color: HexColor('#8c8c8e'),
+                                  fontWeight: FontWeight.w900
 
                                   // HexColor(
                                   //     colorPreference.iconsColor.toString())
@@ -327,7 +334,7 @@ class _MessageInputState extends State<MessageInput> {
               Container(
                 margin: const EdgeInsets.only(left: 10),
                 child: StreamBuilder(builder: (context, snapshot) {
-                  return GestureDetector(
+                  return SingleTapEvent(
                     onTap: () async {
                       final connection =
                           await ChatSocketRepository.hasNetwork();
@@ -350,7 +357,10 @@ class _MessageInputState extends State<MessageInput> {
                     child: Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: HexColor('#8c8c8e'),
+                        color: (_textController.text.isEmpty ||
+                                _textController.text == '')
+                            ? HexColor('#8c8c8e')
+                            : HexColor(colorPreference.messageClientColor!),
 
                         //  HexColor(colorPreference.messageBotColor!)
                         //             .computeLuminance() >

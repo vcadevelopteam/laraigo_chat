@@ -1,5 +1,8 @@
 // ignore_for_file: library_private_types_in_public_api, must_be_immutable, use_key_in_widget_constructors
 
+import 'dart:io';
+
+import 'package:flutter/services.dart';
 import 'package:laraigo_chat/core/chat_socket.dart';
 import 'package:laraigo_chat/core/widget/message_input.dart';
 import 'package:laraigo_chat/core/widget/messages_area.dart';
@@ -26,6 +29,7 @@ class ChatPage extends StatefulWidget {
 class _ChatPageState extends State<ChatPage> {
   List<Message> messages = [];
   bool visible = true;
+  var messagesCount = [];
 
   final f = DateFormat('dd/mm/yyyy');
   ScrollController? scrollController;
@@ -34,7 +38,12 @@ class _ChatPageState extends State<ChatPage> {
   void initState() {
     super.initState();
     initSocket();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+    ]);
   }
+
+  
 
   @override
   void dispose() {
@@ -136,6 +145,7 @@ class _ChatPageState extends State<ChatPage> {
     //identify properties to customize the chat screen
     var screenWidth = MediaQuery.of(context).size.width;
     var screenHeight = MediaQuery.of(context).size.height - kToolbarHeight;
+    var padding = MediaQuery.of(context).viewPadding;
     ColorPreference colorPreference =
         widget.socket.integrationResponse!.metadata!.color!;
     Color backgroundColor =
@@ -146,6 +156,10 @@ class _ChatPageState extends State<ChatPage> {
         widget.socket.integrationResponse!.metadata!.personalization!;
     Color textColor =
         backgroundColor.computeLuminance() > 0.5 ? Colors.black : Colors.white;
+
+    double finalHeight = Platform.isAndroid
+        ? screenHeight - padding.bottom - padding.top
+        : screenHeight - padding.top;
 
     return WillPopScope(
       onWillPop: () async {
@@ -191,8 +205,8 @@ class _ChatPageState extends State<ChatPage> {
                     const SizedBox(
                       height: 1,
                     ),
-
-                    if (header.headerSubtitle != null && header.headerSubtitle!.length>5)
+                    if (header.headerSubtitle != null &&
+                        header.headerSubtitle!.length > 5)
                       Text(header.headerSubtitle.toString(),
                           style: TextStyle(
                               fontSize: 15,
@@ -210,7 +224,6 @@ class _ChatPageState extends State<ChatPage> {
                     final prefs = await SharedPreferences.getInstance();
                     prefs.setBool("cerradoManualmente", true);
                     Navigator.pop(context);
-
                   } catch (ex) {
                     Navigator.pop(context);
                   }
@@ -243,27 +256,31 @@ class _ChatPageState extends State<ChatPage> {
           ),
           backgroundColor:
               HexColor(colorPreference.chatBackgroundColor.toString()),
-          body: Container(
-            height: screenHeight,
-            decoration: BoxDecoration(color: backgroundColor),
+          body: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            // keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.manual,
             child: Container(
-                width: screenWidth,
-                height: screenHeight,
-                padding: const EdgeInsets.all(10),
-                child: Column(
-                  children: [
-                    Flexible(
-                      flex: 10,
-                      child: Container(
-                        child: widget.socket.channel != null
-                            ? MessagesArea(widget.socket)
-                            : Container(),
+              height: finalHeight,
+              decoration: BoxDecoration(color: backgroundColor),
+              child: Container(
+                  width: screenWidth,
+                  height: screenHeight,
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                    children: [
+                      Flexible(
+                        flex: 10,
+                        child: Container(
+                          child: widget.socket.channel != null
+                              ? MessagesArea(widget.socket)
+                              : Container(),
+                        ),
                       ),
-                    ),
-                    //send socket information to MessageInput component
-                    MessageInput(widget.socket)
-                  ],
-                )),
+                      //send socket information to MessageInput component
+                      MessageInput(widget.socket)
+                    ],
+                  )),
+            ),
           )),
     );
   }

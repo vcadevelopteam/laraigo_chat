@@ -1,6 +1,7 @@
 // ignore_for_file: must_be_immutable
 
 import 'package:flutter/material.dart';
+import 'package:laraigo_chat/helpers/single_tap.dart';
 
 import '../../helpers/color_convert.dart';
 import '../../model/carousel_button.dart';
@@ -8,9 +9,6 @@ import '../../model/color_preference.dart';
 import '../../model/message_response.dart';
 import '../chat_socket.dart';
 
-/*
-Message Widget for Carousel MessageType
- */
 class MessageCarousel extends StatelessWidget {
   ColorPreference color;
   final ChatSocket _socket;
@@ -23,16 +21,52 @@ class MessageCarousel extends StatelessWidget {
   }
 
   Widget getButton(List<CarouselButton> buttons) {
-    return ListView.builder(
-      shrinkWrap: true,
-      itemCount: buttons.length,
-      itemBuilder: (context, indx) {
-        return TextButton(
-            // style: ButtonStyle(padding:MaterialStatePropertyAll(EdgeInsets.zero)  ),
-
+    return buttons.length > 1
+        ? ListView.builder(
+            physics: const BouncingScrollPhysics(),
+            shrinkWrap: true,
+            itemCount: buttons.length,
+            itemBuilder: (context, indx) {
+              return SingleTapEventElevatedButton(
+                  loader: const SizedBox(
+                      height: 10,
+                      width: 10,
+                      child: CircularProgressIndicator()),
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.transparent, elevation: 0),
+                  onPressed: () {
+                    sendMessage(buttons[indx].payload.toString(),
+                        buttons[indx].text.toString());
+                  },
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Divider(
+                        color: HexColor(color.messageClientColor!),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 5),
+                        child: Text(
+                          buttons[0].text!,
+                          style: TextStyle(
+                              color: HexColor(color.messageClientColor!)),
+                        ),
+                      ),
+                    ],
+                  ));
+            },
+          )
+        : SingleTapEventElevatedButton(
+            loader: const SizedBox(
+                height: 10, width: 10, child: CircularProgressIndicator()),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: HexColor(color.messageBotColor!),
+              elevation: 0,
+            ),
             onPressed: () {
-              sendMessage(buttons[indx].payload.toString(),
-                  buttons[indx].text.toString());
+              sendMessage(
+                  buttons[0].payload.toString(), buttons[0].text.toString());
             },
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -41,20 +75,17 @@ class MessageCarousel extends StatelessWidget {
                 Divider(
                   color: HexColor(color.messageClientColor!),
                 ),
-                Text(
-                  buttons[indx].text!,
-                  style: TextStyle(
-                    color: HexColor(color.messageBotColor.toString())
-                                .computeLuminance() >
-                            0.5
-                        ? Colors.black
-                        : Colors.white,
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 5),
+                  child: Text(
+                    buttons[0].text!,
+                    style:
+                        TextStyle(color: HexColor(color.messageClientColor!)),
                   ),
                 ),
               ],
-            ));
-      },
-    );
+            ),
+          );
   }
 
   @override
