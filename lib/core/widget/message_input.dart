@@ -182,6 +182,7 @@ class _MessageInputState extends State<MessageInput> {
         widget.socket.integrationResponse!.metadata!.color!;
     Color backgroundColor =
         HexColor(colorPreference.chatBackgroundColor.toString());
+    // bool sendValidator = false;
 
     return SafeArea(
       child: Container(

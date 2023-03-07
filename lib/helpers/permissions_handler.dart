@@ -10,7 +10,7 @@ Future<bool> askGps() async {
 }
 
 Future<bool> askGpsForIos() async {
-  // final service = await Geolocator.requestPermission() ;
+  // final service = await Geolocator.requestPermission();
   final serviceEnabled = await Geolocator.checkPermission();
 
   if (serviceEnabled == LocationPermission.always ||
@@ -21,7 +21,6 @@ Future<bool> askGpsForIos() async {
 
 Future<bool> askStorage() async {
   final status = await Permission.storage.request();
-
   if (status == PermissionStatus.granted) return true;
 
   return false;

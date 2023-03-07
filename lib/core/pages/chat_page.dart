@@ -1,4 +1,4 @@
-// ignore_for_file: library_private_types_in_public_api, must_be_immutable, use_key_in_widget_constructors, use_build_context_synchronously
+// ignore_for_file: library_private_types_in_public_api, must_be_immutable, use_key_in_widget_constructors
 
 import 'dart:io';
 
@@ -224,6 +224,7 @@ class _ChatPageState extends State<ChatPage> {
                     await widget.socket.channel!.sink.close();
                     final prefs = await SharedPreferences.getInstance();
                     prefs.setBool("cerradoManualmente", true);
+                    // ignore: use_build_context_synchronously
                     Navigator.pop(context);
                   } catch (ex) {
                     Navigator.pop(context);
