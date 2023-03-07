@@ -1,3 +1,7 @@
+# 1.0.4+18
+
+- Adding fix to some error found.
+
 # 1.0.3+18
 
 - Adding UI Changes.

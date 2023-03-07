@@ -1,3 +1,5 @@
+// ignore_for_file: unused_local_variable
+
 import 'dart:convert';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
@@ -34,7 +36,9 @@ class ChatSocketRepository {
     //Saved into shared preferences as IntegrationId
     pref.setString(IdentifierType.integrationId.name, integrationId);
 
-    print(IntegrationResponse.fromJson(jsonDecode(response.body)));
+    if (kDebugMode) {
+      print(IntegrationResponse.fromJson(jsonDecode(response.body)));
+    }
 
     return IntegrationResponse.fromJson(jsonDecode(response.body));
   }
@@ -149,6 +153,10 @@ class ChatSocketRepository {
       //No avalaible here
       case MessageType.carousel:
         break;
+      case MessageType.image:
+        break;
+      case MessageType.video:
+        break;
     }
     //Waiting for response while is sent as an Http Post
     var response = await ApiManager.post(
@@ -243,7 +251,7 @@ using internal databases as SQLite, Hive, etc.
   }
 
   static Future<File> downloadFile(String url, String filename) async {
-    var httpClient = new HttpClient();
+    var httpClient = HttpClient();
 
     var request = await httpClient.getUrl(Uri.parse(url));
     var response = await request.close();

@@ -1,7 +1,8 @@
-// ignore_for_file: library_private_types_in_public_api, must_be_immutable, use_key_in_widget_constructors
+// ignore_for_file: library_private_types_in_public_api, must_be_immutable, use_key_in_widget_constructors, use_build_context_synchronously
 
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:laraigo_chat/core/chat_socket.dart';
 import 'package:laraigo_chat/core/widget/message_input.dart';
@@ -42,8 +43,6 @@ class _ChatPageState extends State<ChatPage> {
       DeviceOrientation.portraitUp,
     ]);
   }
-
-  
 
   @override
   void dispose() {
@@ -183,7 +182,9 @@ class _ChatPageState extends State<ChatPage> {
               children: [
                 CircleAvatar(
                   onBackgroundImageError: (exception, stackTrace) {
-                    print("No Image loaded");
+                    if (kDebugMode) {
+                      print("No Image loaded");
+                    }
                   },
                   backgroundImage: NetworkImage(headerIcons.chatHeaderImage!),
                   backgroundColor:

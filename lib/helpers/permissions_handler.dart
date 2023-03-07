@@ -10,11 +10,11 @@ Future<bool> askGps() async {
 }
 
 Future<bool> askGpsForIos() async {
-  final service = await Geolocator.requestPermission() ;
+  // final service = await Geolocator.requestPermission() ;
   final serviceEnabled = await Geolocator.checkPermission();
 
-
-  if (serviceEnabled==LocationPermission.always || serviceEnabled==LocationPermission.whileInUse  ) return true;
+  if (serviceEnabled == LocationPermission.always ||
+      serviceEnabled == LocationPermission.whileInUse) return true;
 
   return false;
 }

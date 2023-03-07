@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
@@ -191,7 +192,9 @@ class _MessageBubbleState extends State<MessageBubble> {
             if (!widget.message.isUser!)
               CircleAvatar(
                 onBackgroundImageError: (exception, stackTrace) {
-                  print("No Image loaded");
+                  if (kDebugMode) {
+                    print("No Image loaded");
+                  }
                 },
                 backgroundImage: NetworkImage(widget.imageUrl),
               ),
