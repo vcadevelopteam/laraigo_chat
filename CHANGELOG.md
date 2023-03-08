@@ -1,3 +1,7 @@
+# 1.0.4+22
+
+- Adding gps validator
+
 # 1.0.4+21
 
 - Adding scroll fix.
