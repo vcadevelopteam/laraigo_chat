@@ -1,4 +1,12 @@
-# 1.0.4+18
+# 1.0.4+21
+
+- Adding scroll fix.
+
+# 1.0.4+20
+
+- Adding a new permission handler for storage.
+
+# 1.0.4+19
 
 - Adding fix to some error found.
 
