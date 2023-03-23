@@ -1,3 +1,9 @@
+# 1.0.5+24
+
+- Adding new styles and fix some desings.
+- Also adding a new way to show that you are disconnected,
+- Adding extra parameters
+
 # 1.0.4+23
 
 - Adding a fix for gps validator for ios

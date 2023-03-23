@@ -15,7 +15,6 @@ import 'package:laraigo_chat/model/models.dart';
 import 'package:laraigo_chat/repository/chat_socket_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../helpers/message_type.dart';
@@ -54,14 +53,16 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   checkConnection(Timer t) async {
-    print("Checking connection");
+    if (kDebugMode) {
+      print("Checking connection");
+    }
     setState(() {
       Utils.hasNetwork().then((value) async {
         hasConnection = value;
         if (hasConnection && isClosed == true) {
           widget.socket.disconnect();
 
-          await Future.delayed(Duration(seconds: 5));
+          await Future.delayed(const Duration(seconds: 5));
           await initSocket();
           setState(() {
             isClosed = false;
@@ -160,7 +161,9 @@ class _ChatPageState extends State<ChatPage> {
         decodedJson['sender'] = SenderType.chat.name;
         widget.socket.controller!.sink.add(decodedJson);
       }, onDone: () async {
-        print("Socket cerrado");
+        if (kDebugMode) {
+          print("Socket cerrado");
+        }
         setState(() {
           hasConnection = false;
           isClosed = true;
@@ -233,7 +236,7 @@ class _ChatPageState extends State<ChatPage> {
           appBar: AppBar(
             bottom: !hasConnection
                 ? PreferredSize(
-                    preferredSize: Size.fromHeight(30),
+                    preferredSize: const Size.fromHeight(30),
                     child: Container(
                         width: double.infinity,
                         height: 30,
