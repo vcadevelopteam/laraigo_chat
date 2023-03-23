@@ -7,10 +7,12 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
+import 'package:laraigo_chat/core/widget/message_buttons.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../helpers/message_type.dart';
 import '../../helpers/sender_type.dart';
+import '../../helpers/util.dart';
 import '../../model/color_preference.dart';
 import '../../model/message.dart';
 import '../../repository/chat_socket_repository.dart';
@@ -38,7 +40,6 @@ class _MessagesAreaState extends State<MessagesArea> {
   @override
   void initState() {
     initStreamBuilder();
-    initChat();
     scrollController = ScrollController()..addListener(_scrollListener);
 
     super.initState();
@@ -66,40 +67,44 @@ class _MessagesAreaState extends State<MessagesArea> {
   }
 
   Widget scrollDownButton() {
-    return AnimatedOpacity(
-      duration: const Duration(milliseconds: 500),
-      opacity: _visible ? 1.0 : 0.0,
-      child: Transform.rotate(
-        angle: 270 * math.pi / 180,
-        child: messages.isNotEmpty
-            ? ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(
-                  shape: const CircleBorder(),
-                  backgroundColor: Colors.white,
-                  padding: const EdgeInsets.all(0),
-                ),
-                onPressed: () {
-                  setState(() {
-                    _visible = false;
-                  });
-                  scrollController!.animateTo(
-                    scrollController!.position.maxScrollExtent + 100,
-                    curve: Curves.easeOut,
-                    duration: const Duration(milliseconds: 500),
-                  );
-                },
-                icon: const Icon(
-                  Icons.arrow_back,
-                  color: Colors.black,
-                ),
-                label: const Text(""))
-            : const SizedBox(),
+    return IgnorePointer(
+      ignoring: !_visible,
+      child: AnimatedOpacity(
+        duration: const Duration(milliseconds: 500),
+        opacity: _visible ? 1.0 : 0.0,
+        child: Transform.rotate(
+          angle: 270 * math.pi / 180,
+          child: messages.isNotEmpty
+              ? ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    shape: const CircleBorder(),
+                    backgroundColor: Colors.white,
+                    padding: const EdgeInsets.all(0),
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _visible = false;
+                    });
+                    scrollController!.animateTo(
+                      scrollController!.position.maxScrollExtent + 100,
+                      curve: Curves.easeOut,
+                      duration: const Duration(milliseconds: 500),
+                    );
+                  },
+                  icon: const Icon(
+                    Icons.arrow_back,
+                    color: Colors.black,
+                  ),
+                  label: const Text(""))
+              : const SizedBox(),
+        ),
       ),
     );
   }
 
-  initStreamBuilder() {
+  initStreamBuilder() async {
     scrollController = ScrollController()..addListener(_scrollListener);
+    bool counterExceptions = false;
 
     ColorPreference colorPreference =
         widget.socket.integrationResponse!.metadata!.color!;
@@ -142,77 +147,94 @@ class _MessagesAreaState extends State<MessagesArea> {
             }
           });
 
-          return messages.isNotEmpty
-              ? Column(
-                  children: [
-                    Expanded(
-                      child: ListView.builder(
-                          physics: const BouncingScrollPhysics(),
-                          controller: scrollController,
-                          reverse: false,
-                          keyboardDismissBehavior:
-                              ScrollViewKeyboardDismissBehavior.onDrag,
-                          itemCount: messages.length,
-                          itemBuilder: (ctx, indx) {
-                            Widget separator = const SizedBox();
+          return
+              //  messages.isNotEmpty
+              //     ?
+              Column(
+            children: [
+              Expanded(
+                child: ListView.builder(
+                    physics: const BouncingScrollPhysics(),
+                    controller: scrollController,
+                    reverse: false,
+                    keyboardDismissBehavior:
+                        ScrollViewKeyboardDismissBehavior.onDrag,
+                    itemCount: messages.length,
+                    itemBuilder: (ctx, indx) {
+                      Widget separator = const SizedBox();
 
-                            if (indx == 0) {
-                              separator = _labelDay(f.format(DateTime.parse(
-                                  MessageBubble.parseTime(
-                                      messages[0].messageDate!))));
-                            }
-                            if (indx != 0 &&
-                                DateTime.fromMillisecondsSinceEpoch(
-                                            messages[indx].messageDate!)
-                                        .day !=
-                                    DateTime.fromMillisecondsSinceEpoch(
-                                            messages[indx - 1].messageDate!)
-                                        .day) {
-                              separator = _labelDay(f.format(DateTime.parse(
-                                  MessageBubble.parseTime(
-                                      messages[indx].messageDate!))));
-                            }
+                      if (indx == 0) {
+                        separator = _labelDay(f.format(DateTime.parse(
+                            MessageBubble.parseTime(
+                                messages[0].messageDate!))));
+                      }
+                      if (indx != 0 &&
+                          DateTime.fromMillisecondsSinceEpoch(
+                                      messages[indx].messageDate!)
+                                  .day !=
+                              DateTime.fromMillisecondsSinceEpoch(
+                                      messages[indx - 1].messageDate!)
+                                  .day) {
+                        separator = _labelDay(f.format(DateTime.parse(
+                            MessageBubble.parseTime(
+                                messages[indx].messageDate!))));
+                      }
+                      //                 else if (message.type == MessageType.button) {
+                      // return MessageButtons(message.data!, widget.color, widget._socket);
+                      // }
 
-                            return messages[indx].type == MessageType.carousel
-                                ? MessageCarousel(messages[indx].data!,
-                                    colorPreference, widget.socket)
-                                : Column(
-                                    children: [
-                                      separator,
-                                      MessageBubble(
-                                          messages[indx],
-                                          indx,
-                                          colorPreference,
-                                          widget
-                                              .socket
-                                              .integrationResponse!
-                                              .metadata!
-                                              .icons!
-                                              .chatHeaderImage!,
-                                          widget.socket)
-                                    ],
-                                  );
-                          }),
-                    ),
-                  ],
-                )
-              : SizedBox(
-                  height: MediaQuery.of(context).size.height - kToolbarHeight,
-                  width: MediaQuery.of(context).size.width,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.message,
-                        color: Theme.of(context).textTheme.bodyLarge!.color,
-                      ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      const Text("No ha enviado mensajes")
-                    ],
-                  ),
-                );
+                      if (messages[indx].type == MessageType.carousel) {
+                        return MessageCarousel(
+                            messages[indx].data!,
+                            colorPreference,
+                            widget.socket,
+                            indx == (messages.length - 1) ? true : null,
+                            widget.socket.integrationResponse!.metadata!.icons!
+                                .chatHeaderImage!);
+                      }
+                      if (messages[indx].type == MessageType.button) {
+                        if (indx == (messages.length - 2)) {
+                          counterExceptions = true;
+                        }
+
+                        return MessageButtons(messages[indx].data!,
+                            colorPreference, widget.socket);
+                      } else {
+                        return Column(
+                          children: [
+                            separator,
+                            MessageBubble(
+                                messages[indx],
+                                indx,
+                                colorPreference,
+                                widget.socket.integrationResponse!.metadata!
+                                    .icons!.chatHeaderImage!,
+                                widget.socket,
+                                indx == (messages.length - 1))
+                          ],
+                        );
+                      }
+                    }),
+              ),
+            ],
+          );
+          // : SizedBox(
+          //     height: MediaQuery.of(context).size.height - kToolbarHeight,
+          //     width: MediaQuery.of(context).size.width,
+          //     child: Row(
+          //       mainAxisAlignment: MainAxisAlignment.center,
+          //       children: [
+          //         Icon(
+          //           Icons.message,
+          //           color: Theme.of(context).textTheme.bodyLarge!.color,
+          //         ),
+          //         const SizedBox(
+          //           width: 10,
+          //         ),
+          //         const Text("No ha enviado mensajes")
+          //       ],
+          //     ),
+          //   );
         } else {
           return const Center(child: CircularProgressIndicator());
         }
@@ -220,49 +242,12 @@ class _MessagesAreaState extends State<MessagesArea> {
     );
   }
 
-  Future<bool> hasNetwork() async {
+  _retryConnectSocket() async {
     try {
-      final result = await InternetAddress.lookup('8.8.8.8');
-
-      return result.isNotEmpty && result[0].rawAddress.isNotEmpty;
-    } on SocketException catch (_) {
-      return false;
-    }
-  }
-
-  initChat() async {
-    try {
-      widget.socket.channel!.stream.asBroadcastStream().listen((event) async {
-        var decodedJson = jsonDecode(event);
-        decodedJson['sender'] = SenderType.chat.name;
-        widget.socket.controller!.sink.add(decodedJson);
-      }, onDone: () async {
-        var prefs = await SharedPreferences.getInstance();
-        if (prefs.getBool("cerradoManualmente") == false) {
-          showDialog(
-            context: context,
-            builder: (context) {
-              return const AlertDialog(
-                title: Text('Error de conexión'),
-                content: Text(
-                    'Por favor verifique su conexión de internet e intentelo nuevamente'),
-              );
-            },
-          );
-        }
-        prefs.setBool("cerradoManualmente", false);
-      }, onError: (error, stacktrace) async {
-        var prefs = await SharedPreferences.getInstance();
-        prefs.setBool("cerradoManualmente", false);
-      });
-
-      await Future.delayed(const Duration(milliseconds: 50));
-      var messagesCount = await ChatSocketRepository.getLocalMessages();
-      // if (messagesCount.isNotEmpty) {
-      //   // scrollDown();
-      // }
-    } catch (exception) {
+      await widget.socket.connect();
+    } catch (exception, _) {
       showDialog(
+        barrierDismissible: false,
         context: context,
         builder: (context) {
           return const AlertDialog(
@@ -272,6 +257,8 @@ class _MessagesAreaState extends State<MessagesArea> {
           );
         },
       );
+      print("sigue sin conectarse");
+      Navigator.pop(context);
     }
   }
 

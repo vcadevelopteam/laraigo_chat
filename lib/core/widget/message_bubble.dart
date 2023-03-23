@@ -9,10 +9,8 @@ import 'package:open_filex/open_filex.dart';
 
 import '../../helpers/color_convert.dart';
 import '../../helpers/message_type.dart';
-import '../../model/color_preference.dart';
-import '../../model/message.dart';
+import '../../model/models.dart';
 import '../chat_socket.dart';
-import 'message_buttons.dart';
 import 'message_media.dart';
 
 /*
@@ -22,11 +20,12 @@ we can filter the message using the MessageType parameter and show different wid
 class MessageBubble extends StatefulWidget {
   final ChatSocket _socket;
   final Message message;
+  final bool? isLastMessage;
   final int indx;
   final ColorPreference color;
   final String imageUrl;
-  const MessageBubble(
-      this.message, this.indx, this.color, this.imageUrl, this._socket,
+  const MessageBubble(this.message, this.indx, this.color, this.imageUrl,
+      this._socket, this.isLastMessage,
       {super.key});
 
   static String parseTime(int time) {
@@ -67,8 +66,6 @@ class _MessageBubbleState extends State<MessageBubble> {
     // }
     else if (message.type == MessageType.media) {
       return MediaMessageBubble(message);
-    } else if (message.type == MessageType.button) {
-      return MessageButtons(message.data!, widget.color, widget._socket);
     } else if (message.type == MessageType.location) {
       return SizedBox(
         width: screenWidth * 0.5,
@@ -76,6 +73,7 @@ class _MessageBubbleState extends State<MessageBubble> {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(5),
           child: GoogleMap(
+            myLocationButtonEnabled: false,
             initialCameraPosition: CameraPosition(
               target: LatLng(message.data![0].lat!.toDouble(),
                   message.data![0].long!.toDouble()),
@@ -170,29 +168,42 @@ class _MessageBubbleState extends State<MessageBubble> {
 
   @override
   Widget build(BuildContext context) {
+    final Extra extraOptions =
+        widget._socket.integrationResponse!.metadata!.extra!;
+
     final f = DateFormat('hh:mm');
     var screenWidth = MediaQuery.of(context).size.width;
     var screenHeight = MediaQuery.of(context).size.height;
+    final bool isLast = widget.isLastMessage ?? false;
 
     return Align(
-      alignment: !widget.message.isUser!
-          ? Alignment.centerLeft
-          : Alignment.centerRight,
+      alignment:
+          (!widget.message.isUser! && widget.message.type != MessageType.button)
+              ? Alignment.centerLeft
+              : Alignment.centerRight,
       child: Container(
         margin: const EdgeInsets.all(5),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.end,
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (!widget.message.isUser!)
-              CircleAvatar(
-                onBackgroundImageError: (exception, stackTrace) {
-                  if (kDebugMode) {
-                    print("No Image loaded");
-                  }
-                },
-                backgroundImage: NetworkImage(widget.imageUrl),
+            if (!widget.message.isUser! && isLast)
+              SizedBox(
+                width: 30,
+                height: 30,
+                child: CircleAvatar(
+                  onBackgroundImageError: (exception, stackTrace) {
+                    if (kDebugMode) {
+                      print("No Image loaded");
+                    }
+                  },
+                  backgroundImage: NetworkImage(widget.imageUrl),
+                ),
               ),
+
+            if (!widget.message.isUser! && isLast == false)
+              const SizedBox(width: 30),
+
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 5),
               child: Material(
@@ -200,32 +211,49 @@ class _MessageBubbleState extends State<MessageBubble> {
                     topRight: !widget.message.isUser!
                         ? const Radius.circular(10)
                         : const Radius.circular(0),
-                    bottomLeft: const Radius.circular(10),
-                    topLeft: widget.message.isUser!
+                    bottomLeft: widget.message.isUser!
                         ? const Radius.circular(10)
                         : const Radius.circular(0),
+                    topLeft: const Radius.circular(10),
                     bottomRight: const Radius.circular(10)),
-                elevation: 10,
+                elevation: widget.message.type != MessageType.button
+                    ? ((widget.message.type == MessageType.media ||
+                                widget.message.type == MessageType.location) &&
+                            extraOptions.withBorder == false)
+                        ? 0
+                        : 5
+                    : 0,
                 child: Container(
                   padding: const EdgeInsets.all(10),
                   constraints: BoxConstraints(
-                    maxWidth: screenWidth * 0.7,
+                    maxWidth: widget.message.type == MessageType.button
+                        ? screenWidth * 0.8
+                        : screenWidth * 0.7,
                     minHeight: 10,
                     maxHeight: screenHeight * 0.6,
                     minWidth: 10,
                   ),
                   decoration: BoxDecoration(
-                      color: widget.message.isUser!
-                          ? HexColor(widget.color.messageClientColor.toString())
-                          : HexColor(widget.color.messageBotColor.toString()),
+                      color: (widget.message.isUser!)
+                          ? ((widget.message.type == MessageType.media ||
+                                      widget.message.type ==
+                                          MessageType.location) &&
+                                  extraOptions.withBorder == false)
+                              ? Colors.transparent
+                              : HexColor(
+                                  widget.color.messageClientColor.toString())
+                          : (widget.message.type == MessageType.button
+                              ? Colors.transparent
+                              : HexColor(
+                                  widget.color.messageBotColor.toString())),
                       borderRadius: BorderRadius.only(
                           topRight: !widget.message.isUser!
                               ? const Radius.circular(10)
                               : const Radius.circular(0),
-                          bottomLeft: const Radius.circular(10),
-                          topLeft: widget.message.isUser!
+                          bottomLeft: widget.message.isUser!
                               ? const Radius.circular(10)
                               : const Radius.circular(0),
+                          topLeft: const Radius.circular(10),
                           bottomRight: const Radius.circular(10))),
                   child: Column(
                       mainAxisSize: MainAxisSize.min,
@@ -238,42 +266,48 @@ class _MessageBubbleState extends State<MessageBubble> {
                             child: Stack(
                               children: [
                                 Padding(
-                                  padding: const EdgeInsets.only(bottom: 20),
+                                  padding: extraOptions.withHour == true
+                                      ? const EdgeInsets.only(bottom: 20)
+                                      : const EdgeInsets.only(),
                                   child: _getMessage(widget.message,
                                       screenHeight, screenWidth, context),
                                 ),
-                                const SizedBox(
-                                  height: 40,
-                                  width: 50,
-                                ),
-                                Positioned(
-                                  left: widget.message.isUser! ? 0 : 10,
-                                  right: widget.message.isUser! ? 10 : 0,
-                                  bottom: 0,
-                                  child: Text(
-                                    f.format(DateTime.parse(
-                                        MessageBubble.parseTime(
-                                            widget.message.messageDate!))),
-                                    textAlign: TextAlign.end,
-                                    style: TextStyle(
-                                        color: widget.message.isUser!
-                                            ? HexColor(widget.color
-                                                            .messageClientColor
-                                                            .toString())
-                                                        .computeLuminance() >
-                                                    0.5
-                                                ? Colors.black
-                                                : Colors.white
-                                            : HexColor(widget.color
-                                                            .messageBotColor
-                                                            .toString())
-                                                        .computeLuminance() >
-                                                    0.5
-                                                ? Colors.black
-                                                : Colors.white,
-                                        fontSize: 12),
-                                  ),
-                                )
+                                extraOptions.withHour == true
+                                    ? const SizedBox(
+                                        height: 40,
+                                        width: 50,
+                                      )
+                                    : const SizedBox(),
+                                extraOptions.withHour == true
+                                    ? Positioned(
+                                        left: widget.message.isUser! ? 0 : 10,
+                                        right: widget.message.isUser! ? 10 : 0,
+                                        bottom: 0,
+                                        child: Text(
+                                          f.format(DateTime.parse(
+                                              MessageBubble.parseTime(widget
+                                                  .message.messageDate!))),
+                                          textAlign: TextAlign.end,
+                                          style: TextStyle(
+                                              color: widget.message.isUser!
+                                                  ? HexColor(widget.color
+                                                                  .messageClientColor
+                                                                  .toString())
+                                                              .computeLuminance() >
+                                                          0.5
+                                                      ? Colors.black
+                                                      : Colors.white
+                                                  : HexColor(widget.color
+                                                                  .messageBotColor
+                                                                  .toString())
+                                                              .computeLuminance() >
+                                                          0.5
+                                                      ? Colors.black
+                                                      : Colors.white,
+                                              fontSize: 12),
+                                        ),
+                                      )
+                                    : const SizedBox()
                               ],
                             ))
                       ]),
