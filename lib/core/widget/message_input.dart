@@ -57,6 +57,7 @@ class _MessageInputState extends State<MessageInput> {
 
         setState(() {
           widget.socket.controller!.sink.add(messageSent);
+          FocusManager.instance.primaryFocus?.unfocus();
         });
 
         _textController.clear();
@@ -288,7 +289,7 @@ class _MessageInputState extends State<MessageInput> {
                       ),
                       Expanded(
                         child: SizedBox(
-                          height: 50,
+                          height: 51,
                           child: Center(
                             child: TextFormField(
                               controller: _textController,
