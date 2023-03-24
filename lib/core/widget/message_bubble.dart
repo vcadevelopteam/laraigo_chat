@@ -22,9 +22,10 @@ class MessageBubble extends StatefulWidget {
   final Message message;
   final bool? isLastMessage;
   final int indx;
+
   final ColorPreference color;
   final String imageUrl;
-  const MessageBubble(this.message, this.indx, this.color, this.imageUrl,
+  MessageBubble(this.message, this.indx, this.color, this.imageUrl,
       this._socket, this.isLastMessage,
       {super.key});
 
@@ -166,6 +167,46 @@ class _MessageBubbleState extends State<MessageBubble> {
     }
   }
 
+  generateIconPhoto() {
+    if (widget.message.haveIcon) {
+      return SizedBox(
+        width: 30,
+        height: 30,
+        child: CircleAvatar(
+          onBackgroundImageError: (exception, stackTrace) {
+            if (kDebugMode) {
+              print("No Image loaded");
+            }
+          },
+          backgroundImage: NetworkImage(widget.imageUrl),
+        ),
+      );
+    } else {
+      return const SizedBox(width: 30);
+    }
+  }
+
+  generateTitle(String systemOS) {
+    if (widget.message.haveTitle) {
+      return Row(
+        children: [
+          Text(
+            '${widget._socket.integrationResponse!.metadata!.personalization!.headerTitle} - $systemOS',
+            style: TextStyle(
+              color: HexColor(widget.color.messageBotColor.toString())
+                          .computeLuminance() >
+                      0.5
+                  ? Colors.black.withOpacity(0.7)
+                  : Colors.white.withOpacity(0.7),
+            ),
+          ),
+        ],
+      );
+    } else {
+      return SizedBox();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final Extra extraOptions =
@@ -175,6 +216,7 @@ class _MessageBubbleState extends State<MessageBubble> {
     var screenWidth = MediaQuery.of(context).size.width;
     var screenHeight = MediaQuery.of(context).size.height;
     final bool isLast = widget.isLastMessage ?? false;
+    final String systemOS = Platform.isAndroid ? 'Android' : 'iOS';
 
     return Align(
       alignment:
@@ -187,22 +229,7 @@ class _MessageBubbleState extends State<MessageBubble> {
           crossAxisAlignment: CrossAxisAlignment.end,
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (!widget.message.isUser! && isLast)
-              SizedBox(
-                width: 30,
-                height: 30,
-                child: CircleAvatar(
-                  onBackgroundImageError: (exception, stackTrace) {
-                    if (kDebugMode) {
-                      print("No Image loaded");
-                    }
-                  },
-                  backgroundImage: NetworkImage(widget.imageUrl),
-                ),
-              ),
-
-            if (!widget.message.isUser! && isLast == false)
-              const SizedBox(width: 30),
+            generateIconPhoto(),
 
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 5),
@@ -216,101 +243,109 @@ class _MessageBubbleState extends State<MessageBubble> {
                         : const Radius.circular(0),
                     topLeft: const Radius.circular(10),
                     bottomRight: const Radius.circular(10)),
-                elevation: widget.message.type != MessageType.button
-                    ? ((widget.message.type == MessageType.media ||
-                                widget.message.type == MessageType.location) &&
-                            extraOptions.withBorder == false)
-                        ? 0
-                        : 5
-                    : 0,
-                child: Container(
-                  padding: const EdgeInsets.all(10),
-                  constraints: BoxConstraints(
-                    maxWidth: widget.message.type == MessageType.button
-                        ? screenWidth * 0.8
-                        : screenWidth * 0.7,
-                    minHeight: 10,
-                    maxHeight: screenHeight * 0.6,
-                    minWidth: 10,
-                  ),
-                  decoration: BoxDecoration(
-                      color: (widget.message.isUser!)
-                          ? ((widget.message.type == MessageType.media ||
-                                      widget.message.type ==
-                                          MessageType.location) &&
-                                  extraOptions.withBorder == false)
-                              ? Colors.transparent
-                              : HexColor(
-                                  widget.color.messageClientColor.toString())
-                          : (widget.message.type == MessageType.button
-                              ? Colors.transparent
-                              : HexColor(
-                                  widget.color.messageBotColor.toString())),
-                      borderRadius: BorderRadius.only(
-                          topRight: !widget.message.isUser!
-                              ? const Radius.circular(10)
-                              : const Radius.circular(0),
-                          bottomLeft: widget.message.isUser!
-                              ? const Radius.circular(10)
-                              : const Radius.circular(0),
-                          topLeft: const Radius.circular(10),
-                          bottomRight: const Radius.circular(10))),
-                  child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: widget.message.isUser!
-                          ? CrossAxisAlignment.end
-                          : CrossAxisAlignment.start,
-                      children: [
-                        Flexible(
-                            fit: FlexFit.loose,
-                            child: Stack(
-                              children: [
-                                Padding(
-                                  padding: extraOptions.withHour == true
-                                      ? const EdgeInsets.only(bottom: 20)
-                                      : const EdgeInsets.only(),
-                                  child: _getMessage(widget.message,
-                                      screenHeight, screenWidth, context),
-                                ),
-                                extraOptions.withHour == true
-                                    ? const SizedBox(
-                                        height: 40,
-                                        width: 50,
-                                      )
-                                    : const SizedBox(),
-                                extraOptions.withHour == true
-                                    ? Positioned(
-                                        left: widget.message.isUser! ? 0 : 10,
-                                        right: widget.message.isUser! ? 10 : 0,
-                                        bottom: 0,
-                                        child: Text(
-                                          f.format(DateTime.parse(
-                                              MessageBubble.parseTime(widget
-                                                  .message.messageDate!))),
-                                          textAlign: TextAlign.end,
-                                          style: TextStyle(
-                                              color: widget.message.isUser!
-                                                  ? HexColor(widget.color
-                                                                  .messageClientColor
-                                                                  .toString())
-                                                              .computeLuminance() >
-                                                          0.5
-                                                      ? Colors.black
-                                                      : Colors.white
-                                                  : HexColor(widget.color
-                                                                  .messageBotColor
-                                                                  .toString())
-                                                              .computeLuminance() >
-                                                          0.5
-                                                      ? Colors.black
-                                                      : Colors.white,
-                                              fontSize: 12),
-                                        ),
-                                      )
-                                    : const SizedBox()
-                              ],
-                            ))
-                      ]),
+                // elevation: widget.message.type != MessageType.button
+                //     ? ((widget.message.type == MessageType.media ||
+                //                 widget.message.type == MessageType.location) &&
+                //             extraOptions.withBorder == false)
+                //         ? 0
+                //         : 5
+                //     : 0,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    generateTitle(systemOS),
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      constraints: BoxConstraints(
+                        maxWidth: widget.message.type == MessageType.button
+                            ? screenWidth * 0.8
+                            : screenWidth * 0.7,
+                        minHeight: 10,
+                        maxHeight: screenHeight * 0.6,
+                        minWidth: 10,
+                      ),
+                      decoration: BoxDecoration(
+                          color: (widget.message.isUser!)
+                              ? ((widget.message.type == MessageType.media ||
+                                          widget.message.type ==
+                                              MessageType.location) &&
+                                      extraOptions.withBorder == false)
+                                  ? Colors.transparent
+                                  : HexColor(widget.color.messageClientColor
+                                      .toString())
+                              : (widget.message.type == MessageType.button
+                                  ? Colors.transparent
+                                  : HexColor(
+                                      widget.color.messageBotColor.toString())),
+                          borderRadius: BorderRadius.only(
+                              topRight: !widget.message.isUser!
+                                  ? const Radius.circular(10)
+                                  : const Radius.circular(0),
+                              bottomLeft: widget.message.isUser!
+                                  ? const Radius.circular(10)
+                                  : const Radius.circular(0),
+                              topLeft: const Radius.circular(10),
+                              bottomRight: const Radius.circular(10))),
+                      child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: widget.message.isUser!
+                              ? CrossAxisAlignment.end
+                              : CrossAxisAlignment.start,
+                          children: [
+                            Flexible(
+                                fit: FlexFit.loose,
+                                child: Stack(
+                                  children: [
+                                    Padding(
+                                      padding: extraOptions.withHour == true
+                                          ? const EdgeInsets.only(bottom: 20)
+                                          : const EdgeInsets.only(),
+                                      child: _getMessage(widget.message,
+                                          screenHeight, screenWidth, context),
+                                    ),
+                                    extraOptions.withHour == true
+                                        ? const SizedBox(
+                                            height: 40,
+                                            width: 50,
+                                          )
+                                        : const SizedBox(),
+                                    extraOptions.withHour == true
+                                        ? Positioned(
+                                            left:
+                                                widget.message.isUser! ? 0 : 10,
+                                            right:
+                                                widget.message.isUser! ? 10 : 0,
+                                            bottom: 0,
+                                            child: Text(
+                                              f.format(DateTime.parse(
+                                                  MessageBubble.parseTime(widget
+                                                      .message.messageDate!))),
+                                              textAlign: TextAlign.end,
+                                              style: TextStyle(
+                                                  color: widget.message.isUser!
+                                                      ? HexColor(widget.color
+                                                                      .messageClientColor
+                                                                      .toString())
+                                                                  .computeLuminance() >
+                                                              0.5
+                                                          ? Colors.black
+                                                          : Colors.white
+                                                      : HexColor(widget.color
+                                                                      .messageBotColor
+                                                                      .toString())
+                                                                  .computeLuminance() >
+                                                              0.5
+                                                          ? Colors.black
+                                                          : Colors.white,
+                                                  fontSize: 12),
+                                            ),
+                                          )
+                                        : const SizedBox()
+                                  ],
+                                ))
+                          ]),
+                    ),
+                  ],
                 ),
               ),
             ),

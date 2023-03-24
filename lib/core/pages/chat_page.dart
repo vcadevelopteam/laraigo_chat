@@ -53,9 +53,7 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   checkConnection(Timer t) async {
-    if (kDebugMode) {
-      print("Checking connection");
-    }
+    print("Checking connection");
     setState(() {
       Utils.hasNetwork().then((value) async {
         hasConnection = value;
@@ -161,9 +159,7 @@ class _ChatPageState extends State<ChatPage> {
         decodedJson['sender'] = SenderType.chat.name;
         widget.socket.controller!.sink.add(decodedJson);
       }, onDone: () async {
-        if (kDebugMode) {
-          print("Socket cerrado");
-        }
+        print("Socket cerrado");
         setState(() {
           hasConnection = false;
           isClosed = true;
@@ -322,8 +318,8 @@ class _ChatPageState extends State<ChatPage> {
                   // ),
                   child: Icon(
                     Icons.cancel_rounded,
-                    color: HexColor('#8c8c8e'),
-                    size: 25,
+                    color: HexColor('#838387'),
+                    size: 30,
                   ),
                 ),
               ),
@@ -339,10 +335,10 @@ class _ChatPageState extends State<ChatPage> {
             child: Container(
               height: finalHeight,
               decoration: BoxDecoration(color: backgroundColor),
-              child: Container(
+              child: SizedBox(
                   width: screenWidth,
                   height: screenHeight,
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  // padding: const EdgeInsets.symmetric(horizontal: 10),
                   child: Column(
                     children: [
                       Flexible(
