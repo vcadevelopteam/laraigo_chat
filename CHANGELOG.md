@@ -1,3 +1,7 @@
+# 1.0.5+25
+
+- Adding icon and title validator
+
 # 1.0.5+24
 
 - Adding new styles and fix some desings.
