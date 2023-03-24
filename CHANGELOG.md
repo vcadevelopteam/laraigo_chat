@@ -1,3 +1,7 @@
+# 1.0.5+26
+
+- Adding unfocus keyboard on text message send and some design fixes
+
 # 1.0.5+25
 
 - Adding icon and title validator
