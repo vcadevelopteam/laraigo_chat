@@ -1,3 +1,8 @@
+# 1.0.5+27
+
+- Adding a new design for media input
+- Adding a new validation for dark mode
+
 # 1.0.5+26
 
 - Adding unfocus keyboard on text message send and some design fixes
