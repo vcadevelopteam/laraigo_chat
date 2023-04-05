@@ -1,3 +1,7 @@
+# 1.0.5+28
+
+- Fixing overflow
+
 # 1.0.5+27
 
 - Adding a new design for media input
