@@ -42,8 +42,8 @@ class _MediaMessageBubbleState extends State<MediaMessageBubble> {
     final documentDirectory = await getApplicationDocumentsDirectory();
 
     final mimeType = lookupMimeType(widget.message.data![0].mediaUrl!);
-    final filePath = path.join(documentDirectory.path,
-            widget.message.data![0].filename.toString());
+    final filePath = path.join(
+        documentDirectory.path, widget.message.data![0].filename.toString());
 
     if (!mimeType!.startsWith('image/')) {
       isImage = false;
