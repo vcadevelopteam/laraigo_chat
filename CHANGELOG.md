@@ -1,3 +1,7 @@
+# 1.0.5+30
+
+- Video upload loader
+
 # 1.0.5+29
 
 - Fixing upload videos in IOS
