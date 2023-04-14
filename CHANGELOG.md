@@ -1,3 +1,7 @@
+# 1.0.5+29
+
+- Fixing upload videos in IOS
+
 # 1.0.5+28
 
 - Fixing overflow
