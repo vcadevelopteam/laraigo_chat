@@ -1,3 +1,7 @@
+# 1.0.5+31
+
+- Video upload fast load and error fix
+
 # 1.0.5+30
 
 - Video upload loader
