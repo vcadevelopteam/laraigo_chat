@@ -1,8 +1,7 @@
-// ignore_for_file: must_be_immutable
+// ignore_for_file: must_be_immutable, depend_on_referenced_packages
 
 import 'dart:io';
 
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mime/mime.dart';
@@ -25,7 +24,8 @@ class MediaMessageBubble extends StatefulWidget {
 class _MediaMessageBubbleState extends State<MediaMessageBubble> {
   VideoPlayerController? controller;
   bool startedPlaying = false;
-  bool isImage = true;
+  File image = File('');
+  bool isImage = false;
 
   @override
   void initState() {
@@ -33,53 +33,54 @@ class _MediaMessageBubbleState extends State<MediaMessageBubble> {
     super.initState();
   }
 
-  loadImage() async {
-    FilePickerResult? result = await FilePicker.platform
-        .pickFiles(allowMultiple: true, type: FileType.media);
-  }
+  // loadImage() async {
+  //   FilePickerResult? result = await FilePicker.platform
+  //       .pickFiles(allowMultiple: true, type: FileType.media);
+  // }
 
   loadVideoPlayer() async {
     final documentDirectory = await getApplicationDocumentsDirectory();
 
     final mimeType = lookupMimeType(widget.message.data![0].mediaUrl!);
 
-    if (!mimeType!.startsWith('image/')) {
+    final filePath = path.join(
+        documentDirectory.path, widget.message.data![0].filename.toString());
+    isImage = false;
+    var file = File("");
+    if (await File(filePath).exists()) {
+      file = File(filePath);
+    } else {
+      final response =
+          await http.get(Uri.parse(widget.message.data![0].mediaUrl!));
       final filePath = path.join(
           documentDirectory.path, widget.message.data![0].filename.toString());
-      isImage = false;
-      var file = File("");
-      if (await File(filePath).exists()) {
-        file = File(filePath);
-      } else {
-        final response =
-            await http.get(Uri.parse(widget.message.data![0].mediaUrl!));
-        final filePath = path.join(documentDirectory.path,
-            widget.message.data![0].filename.toString());
+      file = File(filePath);
 
-        // file = File(documentDirectory.path +
-        //     widget.message.data![0].filename.toString());
-        // final filePath = path.join(documentDirectory.path,
-        //     widget.message.data![0].filename.toString());
-        file = File(filePath);
-
-        if (!await file.exists()) {
-          await file.create(recursive: true);
-        }
-        file.writeAsBytesSync(response.bodyBytes);
-        file = File(filePath);
+      if (!await file.exists()) {
+        await file.create(recursive: true);
       }
-      if (!await file.exists()) file = File(filePath);
-
+      file.writeAsBytesSync(response.bodyBytes);
+      file = File(filePath);
+    }
+    if (!await file.exists()) file = File(filePath);
+    if (!mimeType!.startsWith('image/')) {
       try {
         if (!await file.exists()) file = File(filePath);
         controller = VideoPlayerController.file(file);
         await controller!.initialize();
-        setState(() {
-          startedPlaying = true;
-        });
+        startedPlaying = true;
       } catch (e) {
-        print('Error loading video: $e');
+        if (kDebugMode) {
+          print('Error loading video: $e');
+        }
       }
+    } else {
+      isImage = true;
+      if (!await file.exists()) file = File(filePath);
+      image = file;
+    }
+    if (mounted) {
+      setState(() {});
     }
   }
 
@@ -122,8 +123,7 @@ class _MediaMessageBubbleState extends State<MediaMessageBubble> {
                                               print("No Image loaded");
                                             }
                                           },
-                                          image: NetworkImage(widget
-                                              .message.data![0].mediaUrl!))),
+                                          image: FileImage(image))),
                                 );
                               }),
                         ),
@@ -137,19 +137,19 @@ class _MediaMessageBubbleState extends State<MediaMessageBubble> {
                 decoration: const BoxDecoration(),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(10),
-                  child: Image.network(widget.message.data![0].mediaUrl!,
-                      fit: BoxFit.cover, frameBuilder:
-                          (context, child, frame, wasSynchronouslyLoaded) {
-                    return child;
-                  }, loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) {
-                      return child;
-                    } else {
+                  child: Image.file(
+                    image,
+                    errorBuilder: (context, error, stackTrace) {
                       return const Center(
                         child: CircularProgressIndicator(),
                       );
-                    }
-                  }),
+                    },
+                    fit: BoxFit.cover,
+                    frameBuilder:
+                        (context, child, frame, wasSynchronouslyLoaded) {
+                      return child;
+                    },
+                  ),
                 )
 
                 //  FadeInImage(image:NetworkImage(widget.message.data![0].mediaUrl!) ,placeholder: ,)
