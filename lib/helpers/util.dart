@@ -1,8 +1,6 @@
-// ignore_for_file: depend_on_referenced_packages
-
 import 'dart:io';
 import 'package:mime/mime.dart';
-import 'package:path/path.dart';
+import 'package:path/path.dart' as path;
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_native_image/flutter_native_image.dart';
@@ -36,7 +34,7 @@ class Utils {
           mimeType.contains("svg")) {
         File compressedFile =
             await FlutterNativeImage.compressImage(element.path!, quality: 80);
-        var fileName = basename(compressedFile.path);
+        var fileName = path.basename(compressedFile.path);
         imagesCompressed.add(PlatformFile(
             name: fileName,
             size: compressedFile.lengthSync(),

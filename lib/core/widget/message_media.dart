@@ -1,16 +1,18 @@
+// ignore_for_file: must_be_immutable, depend_on_referenced_packages
+
 import 'dart:io';
 
+import 'package:chewie/chewie.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mime/mime.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';
-import 'package:path/path.dart';
+import 'package:path/path.dart' as path;
 
 import '../../model/message.dart';
 
-// ignore: must_be_immutable
 class MediaMessageBubble extends StatefulWidget {
   Message message;
   // ignore: use_key_in_widget_constructors
@@ -22,7 +24,8 @@ class MediaMessageBubble extends StatefulWidget {
 
 class _MediaMessageBubbleState extends State<MediaMessageBubble> {
   VideoPlayerController? controller;
-  bool startedPlaying = false;
+  ChewieController? chewieController;
+
   File image = File('');
   bool isImage = false;
 
@@ -42,7 +45,7 @@ class _MediaMessageBubbleState extends State<MediaMessageBubble> {
 
     final mimeType = lookupMimeType(widget.message.data![0].mediaUrl!);
 
-    final filePath = join(
+    final filePath = path.join(
         documentDirectory.path, widget.message.data![0].filename.toString());
     isImage = false;
     var file = File("");
@@ -51,7 +54,7 @@ class _MediaMessageBubbleState extends State<MediaMessageBubble> {
     } else {
       final response =
           await http.get(Uri.parse(widget.message.data![0].mediaUrl!));
-      final filePath = join(
+      final filePath = path.join(
           documentDirectory.path, widget.message.data![0].filename.toString());
       file = File(filePath);
 
@@ -67,7 +70,12 @@ class _MediaMessageBubbleState extends State<MediaMessageBubble> {
         if (!await file.exists()) file = File(filePath);
         controller = VideoPlayerController.file(file);
         await controller!.initialize();
-        startedPlaying = true;
+        setState(() {
+          chewieController = ChewieController(
+              videoPlayerController: controller!,
+              allowFullScreen: true,
+              showControls: true);
+        });
       } catch (e) {
         if (kDebugMode) {
           print('Error loading video: $e');
@@ -78,6 +86,7 @@ class _MediaMessageBubbleState extends State<MediaMessageBubble> {
       if (!await file.exists()) file = File(filePath);
       image = file;
     }
+
     if (mounted) {
       setState(() {});
     }
@@ -85,6 +94,8 @@ class _MediaMessageBubbleState extends State<MediaMessageBubble> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
     var screenWidth = MediaQuery.of(context).size.width;
     var screenHeight = MediaQuery.of(context).size.height;
 
@@ -154,34 +165,23 @@ class _MediaMessageBubbleState extends State<MediaMessageBubble> {
                 //  FadeInImage(image:NetworkImage(widget.message.data![0].mediaUrl!) ,placeholder: ,)
 
                 ))
-        : startedPlaying
-            ? GestureDetector(
-                onTap: () async {
-                  if (controller!.value.isPlaying) {
-                    controller!.pause();
-                    startedPlaying = false;
-                  } else {
-                    controller!.play();
-                    startedPlaying = true;
-                  }
-                },
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(15),
-                  child: Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 5),
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                      ),
-                      child: Column(children: [
-                        Expanded(
-                          child: AspectRatio(
-                            aspectRatio: controller!.value.aspectRatio,
-                            child: VideoPlayer(controller!),
-                          ),
-                        ),
-                      ])),
-                ),
-              )
+        : controller != null && chewieController != null
+            ? ClipRRect(
+                borderRadius: BorderRadius.circular(15),
+                child: Stack(
+                  children: [
+                    if (chewieController != null)
+                      Container(
+                          decoration: BoxDecoration(
+                              color: Colors.black,
+                              borderRadius: BorderRadius.circular(15)),
+                          width: double.infinity,
+                          height: controller!.value.size.height,
+                          child: Chewie(
+                            controller: chewieController!,
+                          )),
+                  ],
+                ))
             : const CircularProgressIndicator();
   }
 }

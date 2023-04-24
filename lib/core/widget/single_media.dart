@@ -47,6 +47,8 @@ class _SingleMediaState extends State<SingleMedia> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
 
+    final deviceRatio = size.width / size.height;
+
     return controller == null && chewieController == null
         ? Container(
             margin: const EdgeInsets.symmetric(vertical: 30),

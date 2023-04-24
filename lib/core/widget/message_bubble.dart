@@ -1,5 +1,3 @@
-// ignore_for_file: depend_on_referenced_packages, library_prefixes, non_constant_identifier_names
-
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -8,7 +6,7 @@ import 'package:flutter_map/plugin_api.dart';
 import 'package:intl/intl.dart';
 import 'package:laraigo_chat/repository/chat_socket_repository.dart';
 import 'package:open_filex/open_filex.dart';
-import 'package:latlong2/latlong.dart';
+import 'package:latlong2/latlong.dart' as latLng;
 
 import '../../helpers/color_convert.dart';
 import '../../helpers/message_type.dart';
@@ -85,7 +83,7 @@ class _MessageBubbleState extends State<MessageBubble> {
                 onTap: null,
                 onLongPress: null,
                 interactiveFlags: InteractiveFlag.none,
-                center: LatLng(message.data![0].lat!.toDouble(),
+                center: latLng.LatLng(message.data![0].lat!.toDouble(),
                     message.data![0].long!.toDouble())),
             nonRotatedChildren: [
               TileLayer(
@@ -99,7 +97,7 @@ class _MessageBubbleState extends State<MessageBubble> {
               MarkerLayer(
                 markers: [
                   Marker(
-                      point: LatLng(message.data![0].lat!.toDouble(),
+                      point: latLng.LatLng(message.data![0].lat!.toDouble(),
                           message.data![0].long!.toDouble()),
                       // width: 80,
                       // height: 80,
@@ -296,102 +294,132 @@ class _MessageBubbleState extends State<MessageBubble> {
                 //         : 5
                 //     : 0,
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    generateTitle(systemOS),
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      constraints: BoxConstraints(
-                        maxWidth: widget.message.type == MessageType.button
-                            ? screenWidth * 0.8
-                            : screenWidth * 0.7,
-                        minHeight: 10,
-                        maxHeight: screenHeight * 0.6,
-                        minWidth: 10,
-                      ),
-                      decoration: BoxDecoration(
-                          color: (widget.message.isUser!)
-                              ? ((widget.message.type == MessageType.media ||
-                                          widget.message.type ==
-                                              MessageType.location) &&
-                                      extraOptions.withBorder == false)
-                                  ? HexColor(widget.color.chatBackgroundColor
-                                      .toString())
-                                  : HexColor(widget.color.messageClientColor
-                                      .toString())
-                              : (widget.message.type == MessageType.button
-                                  ? HexColor(widget.color.chatBackgroundColor
-                                      .toString())
-                                  : HexColor(
-                                      widget.color.messageBotColor.toString())),
-                          borderRadius: BorderRadius.only(
-                              topRight: !widget.message.isUser!
-                                  ? const Radius.circular(10)
-                                  : const Radius.circular(0),
-                              bottomLeft: widget.message.isUser!
-                                  ? const Radius.circular(10)
-                                  : const Radius.circular(0),
-                              topLeft: const Radius.circular(10),
-                              bottomRight: const Radius.circular(10))),
-                      child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: widget.message.isUser!
-                              ? CrossAxisAlignment.end
-                              : CrossAxisAlignment.start,
-                          children: [
-                            Flexible(
-                                fit: FlexFit.loose,
-                                child: Stack(
-                                  children: [
-                                    Padding(
-                                      padding: extraOptions.withHour == true
-                                          ? const EdgeInsets.only(bottom: 20)
-                                          : const EdgeInsets.only(),
-                                      child: _getMessage(widget.message,
-                                          screenHeight, screenWidth, context),
-                                    ),
-                                    extraOptions.withHour == true
-                                        ? const SizedBox(
-                                            height: 40,
-                                            width: 50,
-                                          )
-                                        : const SizedBox(),
-                                    extraOptions.withHour == true
-                                        ? Positioned(
-                                            left:
-                                                widget.message.isUser! ? 0 : 10,
-                                            right:
-                                                widget.message.isUser! ? 10 : 0,
-                                            bottom: 0,
-                                            child: Text(
-                                              f.format(DateTime.parse(
-                                                  MessageBubble.parseTime(widget
-                                                      .message.messageDate!))),
-                                              textAlign: TextAlign.end,
-                                              style: TextStyle(
-                                                  color: widget.message.isUser!
-                                                      ? HexColor(widget.color
-                                                                      .messageClientColor
-                                                                      .toString())
-                                                                  .computeLuminance() >
-                                                              0.5
-                                                          ? Colors.black
-                                                          : Colors.white
-                                                      : HexColor(widget.color
-                                                                      .messageBotColor
-                                                                      .toString())
-                                                                  .computeLuminance() >
-                                                              0.5
-                                                          ? Colors.black
-                                                          : Colors.white,
-                                                  fontSize: 12),
-                                            ),
-                                          )
-                                        : const SizedBox()
-                                  ],
-                                ))
-                          ]),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        generateTitle(systemOS),
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          constraints: BoxConstraints(
+                            maxWidth: widget.message.type == MessageType.button
+                                ? screenWidth * 0.8
+                                : screenWidth * 0.7,
+                            minHeight: 10,
+                            maxHeight: screenHeight * 0.6,
+                            minWidth: 10,
+                          ),
+                          decoration: BoxDecoration(
+                              color: (widget.message.isUser!)
+                                  ? ((widget.message.type ==
+                                                  MessageType.media ||
+                                              widget.message.type ==
+                                                  MessageType.location) &&
+                                          extraOptions.withBorder == false)
+                                      ? HexColor(widget
+                                          .color.chatBackgroundColor
+                                          .toString())
+                                      : HexColor(widget.color.messageClientColor.toString())
+                                          .withOpacity(
+                                              widget.message.isSent ? 1.0 : 0.5)
+                                  : (widget.message.type == MessageType.button
+                                      ? HexColor(widget
+                                          .color.chatBackgroundColor
+                                          .toString())
+                                      : HexColor(widget.color.messageBotColor
+                                          .toString())),
+                              borderRadius: BorderRadius.only(
+                                  topRight: !widget.message.isUser!
+                                      ? const Radius.circular(10)
+                                      : const Radius.circular(0),
+                                  bottomLeft: widget.message.isUser!
+                                      ? const Radius.circular(10)
+                                      : const Radius.circular(0),
+                                  topLeft: const Radius.circular(10),
+                                  bottomRight: const Radius.circular(10))),
+                          child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: widget.message.isUser!
+                                  ? CrossAxisAlignment.end
+                                  : CrossAxisAlignment.start,
+                              children: [
+                                Flexible(
+                                    fit: FlexFit.loose,
+                                    child: Stack(
+                                      children: [
+                                        Padding(
+                                          padding: extraOptions.withHour == true
+                                              ? const EdgeInsets.only(
+                                                  bottom: 20)
+                                              : const EdgeInsets.only(),
+                                          child: _getMessage(
+                                              widget.message,
+                                              screenHeight,
+                                              screenWidth,
+                                              context),
+                                        ),
+                                        extraOptions.withHour == true
+                                            ? const SizedBox(
+                                                height: 40,
+                                                width: 50,
+                                              )
+                                            : const SizedBox(),
+                                        extraOptions.withHour == true
+                                            ? Positioned(
+                                                left: widget.message.isUser!
+                                                    ? 0
+                                                    : 10,
+                                                right: widget.message.isUser!
+                                                    ? 10
+                                                    : 0,
+                                                bottom: 0,
+                                                child: Text(
+                                                  f.format(DateTime.parse(
+                                                      MessageBubble.parseTime(
+                                                          widget.message
+                                                              .messageDate!))),
+                                                  textAlign: TextAlign.end,
+                                                  style: TextStyle(
+                                                      color: widget
+                                                              .message.isUser!
+                                                          ? HexColor(widget
+                                                                          .color
+                                                                          .messageClientColor
+                                                                          .toString())
+                                                                      .computeLuminance() >
+                                                                  0.5
+                                                              ? Colors.black
+                                                              : Colors.white
+                                                          : HexColor(widget
+                                                                          .color
+                                                                          .messageBotColor
+                                                                          .toString())
+                                                                      .computeLuminance() >
+                                                                  0.5
+                                                              ? Colors.black
+                                                              : Colors.white,
+                                                      fontSize: 12),
+                                                ),
+                                              )
+                                            : const SizedBox()
+                                      ],
+                                    ))
+                              ]),
+                        ),
+                      ],
                     ),
+                    if (!widget.message.isSent && widget.message.isUser!)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Text(
+                            "Enviando...",
+                            textAlign: TextAlign.end,
+                            style: TextStyle(color: Colors.grey[500]),
+                          )
+                        ],
+                      )
                   ],
                 ),
               ),
