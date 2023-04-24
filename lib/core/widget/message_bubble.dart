@@ -6,6 +6,7 @@ import 'package:flutter_map/plugin_api.dart';
 import 'package:intl/intl.dart';
 import 'package:laraigo_chat/repository/chat_socket_repository.dart';
 import 'package:open_filex/open_filex.dart';
+// ignore: library_prefixes
 import 'package:latlong2/latlong.dart' as latLng;
 
 import '../../helpers/color_convert.dart';

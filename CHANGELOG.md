@@ -1,3 +1,8 @@
+# 1.0.6+33
+
+- Adding new video player
+- Adding message status
+
 # 1.0.5+32
 
 - Adding more visual fixes

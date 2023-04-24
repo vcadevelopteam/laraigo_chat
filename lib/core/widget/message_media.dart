@@ -94,8 +94,6 @@ class _MediaMessageBubbleState extends State<MediaMessageBubble> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-
     var screenWidth = MediaQuery.of(context).size.width;
     var screenHeight = MediaQuery.of(context).size.height;
 
