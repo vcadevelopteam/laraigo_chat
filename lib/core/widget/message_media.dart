@@ -1,5 +1,3 @@
-// ignore_for_file: must_be_immutable, depend_on_referenced_packages
-
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -8,10 +6,11 @@ import 'package:mime/mime.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';
-import 'package:path/path.dart' as path;
+import 'package:path/path.dart';
 
 import '../../model/message.dart';
 
+// ignore: must_be_immutable
 class MediaMessageBubble extends StatefulWidget {
   Message message;
   // ignore: use_key_in_widget_constructors
@@ -43,7 +42,7 @@ class _MediaMessageBubbleState extends State<MediaMessageBubble> {
 
     final mimeType = lookupMimeType(widget.message.data![0].mediaUrl!);
 
-    final filePath = path.join(
+    final filePath = join(
         documentDirectory.path, widget.message.data![0].filename.toString());
     isImage = false;
     var file = File("");
@@ -52,7 +51,7 @@ class _MediaMessageBubbleState extends State<MediaMessageBubble> {
     } else {
       final response =
           await http.get(Uri.parse(widget.message.data![0].mediaUrl!));
-      final filePath = path.join(
+      final filePath = join(
           documentDirectory.path, widget.message.data![0].filename.toString());
       file = File(filePath);
 

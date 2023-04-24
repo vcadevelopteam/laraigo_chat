@@ -37,7 +37,7 @@ class _MessagesAreaState extends State<MessagesArea> {
   void initState() {
     initStreamBuilder();
     scrollController = ScrollController()..addListener(_scrollListener);
-    widget.focusNode?.addListener(() {
+    widget.focusNode.addListener(() {
       if (widget.focusNode.hasFocus) {
         setState(() {
           _visible = false;

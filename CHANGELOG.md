@@ -1,3 +1,7 @@
+# 1.0.5+32
+
+- Adding more visual fixes
+
 # 1.0.5+31
 
 - Video upload fast load and error fix

@@ -1,3 +1,5 @@
+// ignore_for_file: depend_on_referenced_packages, library_prefixes, non_constant_identifier_names
+
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -6,7 +8,7 @@ import 'package:flutter_map/plugin_api.dart';
 import 'package:intl/intl.dart';
 import 'package:laraigo_chat/repository/chat_socket_repository.dart';
 import 'package:open_filex/open_filex.dart';
-import 'package:latlong2/latlong.dart' as latLng;
+import 'package:latlong2/latlong.dart';
 
 import '../../helpers/color_convert.dart';
 import '../../helpers/message_type.dart';
@@ -83,7 +85,7 @@ class _MessageBubbleState extends State<MessageBubble> {
                 onTap: null,
                 onLongPress: null,
                 interactiveFlags: InteractiveFlag.none,
-                center: latLng.LatLng(message.data![0].lat!.toDouble(),
+                center: LatLng(message.data![0].lat!.toDouble(),
                     message.data![0].long!.toDouble())),
             nonRotatedChildren: [
               TileLayer(
@@ -97,7 +99,7 @@ class _MessageBubbleState extends State<MessageBubble> {
               MarkerLayer(
                 markers: [
                   Marker(
-                      point: latLng.LatLng(message.data![0].lat!.toDouble(),
+                      point: LatLng(message.data![0].lat!.toDouble(),
                           message.data![0].long!.toDouble()),
                       // width: 80,
                       // height: 80,
