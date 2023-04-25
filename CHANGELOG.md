@@ -1,3 +1,8 @@
+# 1.0.6+34
+
+- Fixing video player overflow
+- Fix map message
+
 # 1.0.6+33
 
 - Adding new video player
