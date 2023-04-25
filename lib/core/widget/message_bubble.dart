@@ -1,4 +1,4 @@
-// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: depend_on_referenced_packages, library_prefixes, non_constant_identifier_names
 
 import 'dart:io';
 
@@ -8,7 +8,6 @@ import 'package:flutter_map/plugin_api.dart';
 import 'package:intl/intl.dart';
 import 'package:laraigo_chat/repository/chat_socket_repository.dart';
 import 'package:open_filex/open_filex.dart';
-// ignore: library_prefixes
 import 'package:latlong2/latlong.dart' as latLng;
 
 import '../../helpers/color_convert.dart';
@@ -308,7 +307,7 @@ class _MessageBubbleState extends State<MessageBubble> {
                           constraints: BoxConstraints(
                             maxWidth: widget.message.type == MessageType.button
                                 ? screenWidth * 0.8
-                                : screenWidth * 0.7,
+                                : screenWidth * 0.75,
                             minHeight: 10,
                             maxHeight: screenHeight * 0.6,
                             minWidth: 10,

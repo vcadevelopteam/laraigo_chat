@@ -166,20 +166,17 @@ class _MediaMessageBubbleState extends State<MediaMessageBubble> {
         : controller != null && chewieController != null
             ? ClipRRect(
                 borderRadius: BorderRadius.circular(15),
-                child: Stack(
-                  children: [
-                    if (chewieController != null)
-                      Container(
-                          decoration: BoxDecoration(
-                              color: Colors.black,
-                              borderRadius: BorderRadius.circular(15)),
-                          width: double.infinity,
-                          height: controller!.value.size.height,
-                          child: Chewie(
-                            controller: chewieController!,
-                          )),
-                  ],
-                ))
+                child: chewieController != null
+                    ? Container(
+                        decoration: BoxDecoration(
+                            color: Colors.black,
+                            borderRadius: BorderRadius.circular(15)),
+                        width: double.infinity,
+                        height: controller!.value.size.height,
+                        child: Chewie(
+                          controller: chewieController!,
+                        ))
+                    : null)
             : const CircularProgressIndicator();
   }
 }
