@@ -1,3 +1,7 @@
+# 1.0.6+35
+
+- Fixing extra visual errors
+
 # 1.0.6+34
 
 - Fixing video player overflow
