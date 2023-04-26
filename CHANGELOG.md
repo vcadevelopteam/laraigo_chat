@@ -1,3 +1,7 @@
+# 1.0.6+36
+
+- Fixing error with custom message
+
 # 1.0.6+35
 
 - Fixing extra visual errors
