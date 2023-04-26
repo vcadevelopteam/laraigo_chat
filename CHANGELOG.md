@@ -1,3 +1,11 @@
+# 1.0.6+38
+
+- Reduce wait time
+
+# 1.0.6+37
+
+- Fixing message history
+
 # 1.0.6+36
 
 - Fixing error with custom message
