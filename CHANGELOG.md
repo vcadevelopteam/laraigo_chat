@@ -1,3 +1,7 @@
+# 1.0.6+40
+
+- Adding callback when chat is initialized
+
 # 1.0.6+39
 
 - Adding method to get senderId
