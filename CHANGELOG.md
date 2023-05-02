@@ -1,3 +1,7 @@
+# 1.0.6+39
+
+- Adding method to get senderId
+
 # 1.0.6+38
 
 - Reduce wait time
