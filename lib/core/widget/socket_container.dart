@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:laraigo_chat/core/pages/chat_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../helpers/identifier_type.dart';
 import '../../helpers/util.dart';
 import '../../model/color_preference.dart';
 import '../../repository/chat_socket_repository.dart';

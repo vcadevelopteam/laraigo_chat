@@ -1,3 +1,7 @@
+# 1.0.7+41
+
+- Adding fix for onInitialized and onTap Function.
+
 # 1.0.6+40
 
 - Adding callback when chat is initialized
