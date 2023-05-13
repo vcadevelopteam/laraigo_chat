@@ -1,3 +1,8 @@
+# 1.0.7+42
+
+- Added await on onTap.
+- Added a method to delete user information
+
 # 1.0.7+41
 
 - Adding fix for onInitialized and onTap Function.

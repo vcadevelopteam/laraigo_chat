@@ -52,14 +52,14 @@ class _SocketContainerState extends State<SocketContainer> {
       colorPreference = socket!.integrationResponse!.metadata!.color!;
       var prefs = await SharedPreferences.getInstance();
 
+      if (widget.onInitialized != null &&
+          (prefs.getBool("isIntialized") == false ||
+              prefs.getBool("isIntialized") == null)) {
+        widget.onInitialized!();
+        await prefs.setBool("isIntialized", isInitialized);
+      }
       setState(() {
         isInitialized = true;
-        if (widget.onInitialized != null &&
-            (prefs.getBool("isIntialized") == false ||
-                prefs.getBool("isIntialized") == null)) {
-          widget.onInitialized!();
-          prefs.setBool("isIntialized", isInitialized).then((value) => {});
-        }
       });
     } catch (exception, _) {
       Utils.retryFuture(initchatSocketInButton, 15000);
@@ -74,7 +74,7 @@ class _SocketContainerState extends State<SocketContainer> {
 
         if (socket != null && connection) {
           if (widget.onTap != null) {
-            widget.onTap!();
+            await widget.onTap!();
           }
 
           Navigator.push(
