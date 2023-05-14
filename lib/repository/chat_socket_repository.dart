@@ -337,10 +337,12 @@ using internal databases as SQLite, Hive, etc.
     if (pref.getString(IdentifierType.userId.name) != null ||
         pref.getString(IdentifierType.integrationId.name) != null ||
         pref.getString(IdentifierType.sessionId.name) != null ||
+        pref.getString("messages") != null ||
         pref.getBool("isIntialized") != null) {
       await pref.remove(IdentifierType.userId.name);
       await pref.remove(IdentifierType.sessionId.name);
       await pref.remove(IdentifierType.integrationId.name);
+      await pref.remove("messages");
       await pref.remove("isIntialized");
     }
   }

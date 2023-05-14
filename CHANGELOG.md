@@ -1,3 +1,7 @@
+# 1.0.7+43
+
+- Remove saved messages when logout
+
 # 1.0.7+42
 
 - Added await on onTap.
