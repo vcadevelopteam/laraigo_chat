@@ -70,12 +70,14 @@ class _MediaMessageBubbleState extends State<MediaMessageBubble> {
         if (!await file.exists()) file = File(filePath);
         controller = VideoPlayerController.file(file);
         await controller!.initialize();
-        setState(() {
-          chewieController = ChewieController(
-              videoPlayerController: controller!,
-              allowFullScreen: true,
-              showControls: true);
-        });
+        if (mounted) {
+          setState(() {
+            chewieController = ChewieController(
+                videoPlayerController: controller!,
+                allowFullScreen: true,
+                showControls: true);
+          });
+        }
       } catch (e) {
         if (kDebugMode) {
           print('Error loading video: $e');
@@ -100,44 +102,46 @@ class _MediaMessageBubbleState extends State<MediaMessageBubble> {
     return isImage
         ? GestureDetector(
             onTap: () {
-              showDialog(
-                  context: context,
-                  builder: (ctx) {
-                    return GestureDetector(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: Dialog(
-                        insetPadding: const EdgeInsets.all(0),
-                        backgroundColor: Colors.transparent,
-                        child: SizedBox(
-                          width: screenWidth,
-                          height: screenHeight,
-                          child: PageView.builder(
-                              physics: const BouncingScrollPhysics(),
-                              controller:
-                                  PageController(viewportFraction: 0.95),
-                              itemCount: 1,
-                              itemBuilder: (ctx, indx) {
-                                return Container(
-                                  margin:
-                                      const EdgeInsets.symmetric(horizontal: 5),
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(20),
-                                      image: DecorationImage(
-                                          fit: BoxFit.contain,
-                                          onError: (exception, stackTrace) {
-                                            if (kDebugMode) {
-                                              print("No Image loaded");
-                                            }
-                                          },
-                                          image: FileImage(image))),
-                                );
-                              }),
+              if (mounted) {
+                showDialog(
+                    context: context,
+                    builder: (ctx) {
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Dialog(
+                          insetPadding: const EdgeInsets.all(0),
+                          backgroundColor: Colors.transparent,
+                          child: SizedBox(
+                            width: screenWidth,
+                            height: screenHeight,
+                            child: PageView.builder(
+                                physics: const BouncingScrollPhysics(),
+                                controller:
+                                    PageController(viewportFraction: 0.95),
+                                itemCount: 1,
+                                itemBuilder: (ctx, indx) {
+                                  return Container(
+                                    margin: const EdgeInsets.symmetric(
+                                        horizontal: 5),
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(20),
+                                        image: DecorationImage(
+                                            fit: BoxFit.contain,
+                                            onError: (exception, stackTrace) {
+                                              if (kDebugMode) {
+                                                print("No Image loaded");
+                                              }
+                                            },
+                                            image: FileImage(image))),
+                                  );
+                                }),
+                          ),
                         ),
-                      ),
-                    );
-                  });
+                      );
+                    });
+              }
             },
             child: Container(
                 width: double.infinity,

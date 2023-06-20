@@ -1,3 +1,7 @@
+# 1.0.8+44
+
+- Adding state handling
+
 # 1.0.7+43
 
 - Remove saved messages when logout

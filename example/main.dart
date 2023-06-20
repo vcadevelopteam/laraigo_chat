@@ -70,8 +70,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   decoration: BoxDecoration(
                       color: Colors.red,
                       borderRadius: BorderRadius.circular(10)),
-                  child: Column(
-                    children: const [Text("PRUEBA"), Icon(Icons.read_more)],
+                  child: const Column(
+                    children: [Text("PRUEBA"), Icon(Icons.read_more)],
                   ),
                 ),
               ),

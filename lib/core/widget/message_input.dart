@@ -188,9 +188,11 @@ class _MessageInputState extends State<MessageInput> {
           break;
       }
     }
-    setState(() {
-      widget.socket.controller!.sink.add({'data': messagesToSend});
-    });
+    if (mounted) {
+      setState(() {
+        widget.socket.controller!.sink.add({'data': messagesToSend});
+      });
+    }
   }
 
   void initSharedPreferences() async {
@@ -322,7 +324,7 @@ class _MessageInputState extends State<MessageInput> {
                               controller: _textController,
                               textAlign: TextAlign.left,
                               onChanged: (String val) {
-                                setState(() {});
+                                if (mounted) setState(() {});
                               },
                               autofocus: false,
                               style: TextStyle(
@@ -397,15 +399,17 @@ class _MessageInputState extends State<MessageInput> {
                           sendMessage();
                         }
                       } else {
-                        showDialog(
-                            context: context,
-                            builder: ((context) {
-                              return const AlertDialog(
-                                title: Text('Error de conexión'),
-                                content: Text(
-                                    'Por favor verifique su conexión de internet e intentelo nuevamente'),
-                              );
-                            }));
+                        if (mounted) {
+                          showDialog(
+                              context: context,
+                              builder: ((context) {
+                                return const AlertDialog(
+                                  title: Text('Error de conexión'),
+                                  content: Text(
+                                      'Por favor verifique su conexión de internet e intentelo nuevamente'),
+                                );
+                              }));
+                        }
                       }
                     },
                     child: Platform.isIOS
