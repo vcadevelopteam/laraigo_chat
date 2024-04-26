@@ -234,224 +234,235 @@ class _MessageInputState extends State<MessageInput> {
           child: Row(
             children: [
               Expanded(
-                child: StreamBuilder(builder: (context, snapshot) {
-                  return Row(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          widget.focusNode.unfocus();
-                          showModalBottomSheet(
-                                  backgroundColor: Colors.transparent,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20)),
-                                  builder: (modalBottomSheetContext) {
-                                    return MediaInputModal(colorPreference);
-                                  },
-                                  context: context,
-                                  isDismissible: true,
-                                  isScrollControlled: false)
-                              .then((valueInBottomSheet) {
-                            try {
-                              var mapValueInBottomSheet =
-                                  valueInBottomSheet as Map;
+                child: StreamBuilder(
+                  builder: (context, snapshot) {
+                    return Row(
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            widget.focusNode.unfocus();
+                            showModalBottomSheet(
+                                    backgroundColor: Colors.transparent,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(20)),
+                                    builder: (modalBottomSheetContext) {
+                                      return MediaInputModal(colorPreference);
+                                    },
+                                    context: context,
+                                    isDismissible: true,
+                                    isScrollControlled: false)
+                                .then((valueInBottomSheet) {
+                              try {
+                                var mapValueInBottomSheet =
+                                    valueInBottomSheet as Map;
 
-                              if (kDebugMode) {
-                                print(mapValueInBottomSheet["data"]);
-                              }
+                                if (kDebugMode) {
+                                  print(mapValueInBottomSheet["data"]);
+                                }
 
-                              if (mapValueInBottomSheet["data"].isNotEmpty) {
-                                var dataType = mapValueInBottomSheet["type"]
-                                    as MessageType;
+                                if (mapValueInBottomSheet["data"].isNotEmpty) {
+                                  var dataType = mapValueInBottomSheet["type"]
+                                      as MessageType;
 
-                                switch (dataType) {
-                                  case MessageType.media:
-                                    sendMultiMediaMessage(mapValueInBottomSheet,
-                                        MessageType.media);
-                                    break;
-                                  case MessageType.location:
-                                    sendMultiMediaMessage(mapValueInBottomSheet,
-                                        MessageType.location);
-                                    break;
+                                  switch (dataType) {
+                                    case MessageType.media:
+                                      sendMultiMediaMessage(
+                                          mapValueInBottomSheet,
+                                          MessageType.media);
+                                      break;
+                                    case MessageType.location:
+                                      sendMultiMediaMessage(
+                                          mapValueInBottomSheet,
+                                          MessageType.location);
+                                      break;
 
-                                  case MessageType.file:
-                                    sendMultiMediaMessage(mapValueInBottomSheet,
-                                        MessageType.file);
-                                    break;
-                                  case MessageType.text:
-                                    break;
-                                  case MessageType.button:
-                                    break;
-                                  case MessageType.carousel:
-                                    break;
-                                  case MessageType.image:
-                                    break;
-                                  case MessageType.video:
-                                    break;
+                                    case MessageType.file:
+                                      sendMultiMediaMessage(
+                                          mapValueInBottomSheet,
+                                          MessageType.file);
+                                      break;
+                                    case MessageType.text:
+                                      break;
+                                    case MessageType.button:
+                                      break;
+                                    case MessageType.carousel:
+                                      break;
+                                    case MessageType.image:
+                                      break;
+                                    case MessageType.video:
+                                      break;
+                                  }
+                                }
+                              } catch (ex) {
+                                if (kDebugMode) {
+                                  print("No se envia nada");
                                 }
                               }
-                            } catch (ex) {
-                              if (kDebugMode) {
-                                print("No se envia nada");
-                              }
-                            }
-                          });
-                        },
-                        child: Container(
-                          margin: const EdgeInsets.only(right: 10),
-                          decoration: BoxDecoration(
-                            color: HexColor('#8c8c8e'),
-
-                            //  HexColor(colorPreference.messageBotColor!)
-                            //             .computeLuminance() >
-                            //         0.5
-                            //     ? Colors.black
-                            //     : Colors.white, // border color
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            Icons.add,
-                            color: HexColor(colorPreference.iconsColor!),
-                            size: 25,
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: SizedBox(
-                          height: 51,
-                          child: Center(
-                            child: TextFormField(
-                              focusNode: widget.focusNode,
-                              controller: _textController,
-                              textAlign: TextAlign.left,
-                              onChanged: (String val) {
-                                if (mounted) setState(() {});
-                              },
-                              autofocus: false,
-                              style: TextStyle(
-                                  fontSize: 18,
-                                  color: HexColor('#8c8c8e'),
-                                  fontWeight: FontWeight.w500
-
-                                  // HexColor(
-                                  //     colorPreference.iconsColor.toString())
-
-                                  ),
-                              decoration: InputDecoration(
-                                filled: true,
-                                fillColor: Colors.transparent,
-
-                                // HexColor(colorPreference.iconsColor
-                                //                 .toString())
-                                //             .computeLuminance() >
-                                //         0.5
-                                //     ? Colors.black
-                                //     : Colors.white,
-
-                                hintText: "Escribe un mensaje...",
-                                hintMaxLines: 1,
-
-                                contentPadding: const EdgeInsets.only(left: 10),
-                                hintStyle: TextStyle(
-                                    color: HexColor('#8c8c8e'),
-                                    fontWeight: FontWeight.w500,
-                                    overflow: TextOverflow.ellipsis
-
-                                    // HexColor(
-                                    //     colorPreference.iconsColor.toString())
-
-                                    ),
-                                labelStyle: TextStyle(
-                                    color: Theme.of(context)
-                                        .textTheme
-                                        .bodyLarge!
-                                        .color),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(25.0),
-                                  borderSide: const BorderSide(
-                                    color: Colors.transparent,
-                                  ),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(25.0),
-                                  borderSide: const BorderSide(
-                                    color: Colors.transparent,
-                                    width: 2.0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  );
-                }),
-              ),
-              Container(
-                margin: const EdgeInsets.only(left: 10),
-                child: StreamBuilder(builder: (context, snapshot) {
-                  return SingleTapEvent(
-                    onTap: () async {
-                      final connection =
-                          await ChatSocketRepository.hasNetwork();
-                      if (connection) {
-                        if (_textController.text.isNotEmpty) {
-                          sendMessage();
-                        }
-                      } else {
-                        if (mounted) {
-                          showDialog(
-                              context: context,
-                              builder: ((context) {
-                                return const AlertDialog(
-                                  title: Text('Error de conexión'),
-                                  content: Text(
-                                      'Por favor verifique su conexión de internet e intentelo nuevamente'),
-                                );
-                              }));
-                        }
-                      }
-                    },
-                    child: Platform.isIOS
-                        ? Text(
-                            "Enviar",
-                            style: TextStyle(
-                                fontWeight: FontWeight.w700,
-                                fontSize: 17,
-                                color: (_textController.text.isEmpty ||
-                                        _textController.text == '')
-                                    ? HexColor('#8c8c8e')
-                                    : HexColor(
-                                        colorPreference.messageClientColor!)),
-                          )
-                        : Container(
-                            padding: const EdgeInsets.all(8),
+                            });
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.only(right: 10),
                             decoration: BoxDecoration(
-                              color: (_textController.text.isEmpty ||
-                                      _textController.text == '')
-                                  ? HexColor('#8c8c8e')
-                                  : HexColor(
-                                      colorPreference.messageClientColor!),
+                              color: HexColor('#8c8c8e'),
 
                               //  HexColor(colorPreference.messageBotColor!)
                               //             .computeLuminance() >
                               //         0.5
                               //     ? Colors.black
-                              //     : Colors.white,
-                              //      // border color
-
+                              //     : Colors.white, // border color
                               shape: BoxShape.circle,
                             ),
+                            child: Icon(
+                              Icons.add,
+                              color: HexColor(colorPreference.iconsColor!),
+                              size: 25,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: SizedBox(
+                            height: 51,
                             child: Center(
-                              child: Icon(
-                                Icons.send,
-                                color: HexColor(colorPreference.iconsColor!),
-                                size: 20,
+                              child: TextFormField(
+                                focusNode: widget.focusNode,
+                                controller: _textController,
+                                textAlign: TextAlign.left,
+                                onChanged: (String val) {
+                                  if (mounted) setState(() {});
+                                },
+                                autofocus: false,
+                                style: TextStyle(
+                                    fontSize: 18,
+                                    color: HexColor('#8c8c8e'),
+                                    fontWeight: FontWeight.w500
+
+                                    // HexColor(
+                                    //     colorPreference.iconsColor.toString())
+
+                                    ),
+                                decoration: InputDecoration(
+                                  filled: true,
+                                  fillColor: Colors.transparent,
+
+                                  // HexColor(colorPreference.iconsColor
+                                  //                 .toString())
+                                  //             .computeLuminance() >
+                                  //         0.5
+                                  //     ? Colors.black
+                                  //     : Colors.white,
+
+                                  hintText: "Escribe un mensaje...",
+                                  hintMaxLines: 1,
+
+                                  contentPadding:
+                                      const EdgeInsets.only(left: 10),
+                                  hintStyle: TextStyle(
+                                      color: HexColor('#8c8c8e'),
+                                      fontWeight: FontWeight.w500,
+                                      overflow: TextOverflow.ellipsis
+
+                                      // HexColor(
+                                      //     colorPreference.iconsColor.toString())
+
+                                      ),
+                                  labelStyle: TextStyle(
+                                      color: Theme.of(context)
+                                          .textTheme
+                                          .bodyLarge!
+                                          .color),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(25.0),
+                                    borderSide: const BorderSide(
+                                      color: Colors.transparent,
+                                    ),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(25.0),
+                                    borderSide: const BorderSide(
+                                      color: Colors.transparent,
+                                      width: 2.0,
+                                    ),
+                                  ),
+                                ),
                               ),
                             ),
                           ),
-                  );
-                }),
+                        ),
+                      ],
+                    );
+                  },
+                  stream: null,
+                ),
+              ),
+              Container(
+                margin: const EdgeInsets.only(left: 10),
+                child: StreamBuilder(
+                  builder: (context, snapshot) {
+                    return SingleTapEvent(
+                      onTap: () async {
+                        final connection =
+                            await ChatSocketRepository.hasNetwork();
+                        if (connection) {
+                          if (_textController.text.isNotEmpty) {
+                            sendMessage();
+                          }
+                        } else {
+                          if (mounted) {
+                            showDialog(
+                                context: context,
+                                builder: ((context) {
+                                  return const AlertDialog(
+                                    title: Text('Error de conexión'),
+                                    content: Text(
+                                        'Por favor verifique su conexión de internet e intentelo nuevamente'),
+                                  );
+                                }));
+                          }
+                        }
+                      },
+                      child: Platform.isIOS
+                          ? Text(
+                              "Enviar",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 17,
+                                  color: (_textController.text.isEmpty ||
+                                          _textController.text == '')
+                                      ? HexColor('#8c8c8e')
+                                      : HexColor(
+                                          colorPreference.messageClientColor!)),
+                            )
+                          : Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: (_textController.text.isEmpty ||
+                                        _textController.text == '')
+                                    ? HexColor('#8c8c8e')
+                                    : HexColor(
+                                        colorPreference.messageClientColor!),
+
+                                //  HexColor(colorPreference.messageBotColor!)
+                                //             .computeLuminance() >
+                                //         0.5
+                                //     ? Colors.black
+                                //     : Colors.white,
+                                //      // border color
+
+                                shape: BoxShape.circle,
+                              ),
+                              child: Center(
+                                child: Icon(
+                                  Icons.send,
+                                  color: HexColor(colorPreference.iconsColor!),
+                                  size: 20,
+                                ),
+                              ),
+                            ),
+                    );
+                  },
+                  stream: null,
+                ),
               )
             ],
           ),
