@@ -368,7 +368,7 @@ class _MessageBubbleState extends State<MessageBubble> {
                                         extraOptions.withHour == true
                                             ? const SizedBox(
                                                 height: 40,
-                                                width: 50,
+                                                width: 60,
                                               )
                                             : const SizedBox(),
                                         extraOptions.withHour == true

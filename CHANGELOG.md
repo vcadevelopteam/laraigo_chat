@@ -1,3 +1,12 @@
+# 1.0.9+46
+
+- Adding validations fix on height for cards with and without multibuttons
+- Adding custom message validation on first iteration chat
+
+# 1.0.8+45
+
+- Adding fix on carousel message for multibuttons on single card
+
 # 1.0.8+44
 
 - Adding state handling
