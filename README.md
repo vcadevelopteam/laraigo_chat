@@ -16,7 +16,7 @@ You should ensure that you add the router as a dependency in your flutter projec
 
 ```yaml
 dependencies:
-  laraigo_chat: ^1.0.9+47
+  laraigo_chat: ^1.0.9+48
 ```
 
 Like the project uses Geolocator for sharing location is necessary to add the corresponding permissions for it. Following the [Geolocator guide](https://pub.dev/packages/geolocator)

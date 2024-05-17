@@ -505,7 +505,7 @@ class _MediaInputModalState extends State<MediaInputModal> {
                                             child: SizedBox(
                                               width: _screenWidth * 0.2,
                                               height: _screenHeight * 0.1,
-                                              child: const Center(
+                                              child:  Center(
                                                   child: Row(
                                                 mainAxisAlignment:
                                                     MainAxisAlignment.center,

@@ -1,5 +1,9 @@
 # 1.0.9+47
 
+- Adding fix on const values
+
+# 1.0.9+47
+
 - Adding fixed url-buton-link button type redirecctions
 - Adding hypertext validations on text messages
 
