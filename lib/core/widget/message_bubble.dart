@@ -3,12 +3,14 @@
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/plugin_api.dart';
 import 'package:intl/intl.dart';
 import 'package:laraigo_chat/repository/chat_socket_repository.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:latlong2/latlong.dart' as latLng;
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../helpers/color_convert.dart';
 import '../../helpers/message_type.dart';
@@ -51,11 +53,13 @@ class _MessageBubbleState extends State<MessageBubble> {
 
   Widget _getMessage(Message message, screenHeight, screenWidth, context) {
     if (message.type == MessageType.text) {
-      return Text(
-          message.data![0].title!.isNotEmpty
+      return HyperlinkText(
+          message.data![0].title!.isNotEmpty &&
+                  (message.data![0].title! != "null" ||
+                      message.data![0].title == null)
               ? message.data![0].title!
               : message.data![0].message!,
-          style: TextStyle(
+          TextStyle(
               color: message.isUser!
                   ? HexColor(widget.color.messageClientColor.toString())
                               .computeLuminance() >
@@ -450,6 +454,56 @@ class _MessageBubbleState extends State<MessageBubble> {
             //   ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class HyperlinkText extends StatelessWidget {
+  final String text;
+  final TextStyle textStyle;
+
+  const HyperlinkText(this.text, this.textStyle, {super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final RegExp linkRegExp = RegExp(
+        r'(?:(?:https?|ftp):\/\/)?[\w/\-?=%.]+\.[\w/\-&?=%.]+'); // Regex to find links
+
+    List<InlineSpan> spans = [];
+    List<String> substrings = text.split(linkRegExp);
+
+    for (int i = 0; i < substrings.length; i++) {
+      spans.add(TextSpan(
+        text: substrings[i],
+        style: textStyle,
+      ));
+
+      if (i < substrings.length - 1) {
+        String? link = linkRegExp.stringMatch(
+            text.substring(text.indexOf(substrings[i]) + substrings[i].length));
+
+        GestureRecognizer recognizer = TapGestureRecognizer()
+          ..onTap = () async {
+            await launchUrl(Uri.parse(link!));
+          };
+
+        spans.add(
+          TextSpan(
+            text: link,
+            style: textStyle.copyWith(
+              color: Colors.blue, // Link color
+              decoration: TextDecoration.underline,
+            ),
+            recognizer: recognizer,
+          ),
+        );
+      }
+    }
+
+    return RichText(
+      text: TextSpan(
+        children: spans,
       ),
     );
   }

@@ -1,6 +1,6 @@
 name: laraigo_chat
 description: An easy flutter implementation of Laraigo's real time chat services with custom designed bots.
-version: 1.0.9+46
+version: 1.0.9+47
 homepage: https://github.com/vcadevelopteam/broker-sdk/tree/only-package
 
 environment:
@@ -32,6 +32,7 @@ dependencies:
   latlong2: ^0.8.1
   path: ^1.8.2
   flutter_keyboard_visibility: ^5.4.1
+  url_launcher: ^6.1.11
 
 dev_dependencies:
   flutter_test:

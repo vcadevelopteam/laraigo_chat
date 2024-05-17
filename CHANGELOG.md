@@ -1,3 +1,8 @@
+# 1.0.9+47
+
+- Adding fixed url-buton-link button type redirecctions
+- Adding hypertext validations on text messages
+
 # 1.0.9+46
 
 - Adding validations fix on height for cards with and without multibuttons
